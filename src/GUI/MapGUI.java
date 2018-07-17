@@ -11,7 +11,7 @@ public class MapGUI extends GUI {
 
     @Override
     protected void redraw(Graphics g) {
-        
+
 
     }
 

@@ -10,7 +10,7 @@ public class Node {
         this.nodeID = nodeID;
     }
 
-    public static Node withID(int NodeID){ return new Node(nodeID); }
+    public static Node withID(int nodeID){ return new Node(nodeID); }
 
     public Node atLocation(Location loc){
         this.location = loc; return this;

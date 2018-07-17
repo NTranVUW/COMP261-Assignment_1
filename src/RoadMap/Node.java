@@ -2,6 +2,8 @@ package RoadMap;
 
 import RoadMap.Location;
 
+import java.awt.*;
+
 public class Node {
     private int nodeID;
     private Location location;
@@ -18,5 +20,9 @@ public class Node {
 
     public int getNodeID(){
         return this.nodeID;
+    }
+
+    public void draw(Graphics g){
+        g.drawOval((int)location.x, (int)location.y, 10, 10);
     }
 }

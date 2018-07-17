@@ -16,4 +16,8 @@ public class RoadMap {
     public void addNode(Node n){
         nodes.put(n.getNodeID(), n);
     }
+
+    public HashMap<Integer, Node> getNodes(){
+        return this.nodes;
+    }
 }

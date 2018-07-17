@@ -2,6 +2,7 @@ package GUI;
 
 import RoadMap.RoadMap;
 import RoadMap.Loader;
+import RoadMap.Drawer;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -11,8 +12,7 @@ public class MapGUI extends GUI {
 
     @Override
     protected void redraw(Graphics g) {
-
-
+        Drawer drawer = Drawer.drawTo(g).drawNodes(roadMap.getNodes());
     }
 
     @Override

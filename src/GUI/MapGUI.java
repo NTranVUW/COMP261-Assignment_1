@@ -1,16 +1,17 @@
 package GUI;
 
 import RoadMap.RoadMap;
-
+import RoadMap.Loader;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
 
 public class MapGUI extends GUI {
-    private RoadMap map = RoadMap.newInstance();
+    private final RoadMap roadMap = RoadMap.newInstance();
 
     @Override
     protected void redraw(Graphics g) {
+        
 
     }
 
@@ -31,10 +32,10 @@ public class MapGUI extends GUI {
 
     @Override
     protected void onLoad(File nodes, File roads, File segments, File polygons) {
-
+    Loader loader = new Loader.Builder(this.roadMap).nodeFile(nodes).build().load();
     }
 
     public static void main(String[] args){
-        final GUI.MapGUI mapGUI = new MapGUI();
+        final MapGUI mapGUI = new MapGUI();
     }
 }

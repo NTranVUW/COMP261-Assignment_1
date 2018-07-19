@@ -15,14 +15,18 @@ public class Node {
     public static Node withID(int nodeID){ return new Node(nodeID); }
 
     public Node atLocation(Location loc){
-        this.location = loc; return this;
+        this.location = loc;
+        return this;
     }
 
     public int getNodeID(){
         return this.nodeID;
     }
+    public Location getLocation() { return this.location; }
 
-    public void draw(Graphics g){
-        g.drawOval((int)location.x, (int)location.y, 10, 10);
+    public void draw(Graphics g, Location origin, double scale){
+        g.setColor(new Color( 48, 51, 107));
+        Point point = location.asPoint(origin, scale);
+        g.fillOval((int)point.x, (int)point.y, 10, 10);
     }
 }

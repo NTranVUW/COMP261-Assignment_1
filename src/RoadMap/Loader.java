@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Loader {
     private final RoadMap roadMap;
@@ -40,32 +41,86 @@ public class Loader {
         this.polygonFile = builder.polygonFile;
     }
 
-    public Loader load(){
+    public Loader load() throws IOException{
         if (this.nodeFile != null){
             this.loadNodes();
         }
+        if (this.roadFile != null){
+            this.loadRoads();
+        }
+        if (this.segmentFile != null){
+            this.loadSegments();
+        }
+
         return this;
     }
 
-    private void loadNodes(){
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new FileReader(this.nodeFile));
+    private void loadNodes()throws IOException{
+        try (BufferedReader reader = new BufferedReader(new FileReader(this.nodeFile))){
             String line = null;
             while((line = reader.readLine()) != null){
                 String[] split = line.split("\t");
-                for (int i = 0; i < split.length; i+=3){
-                    this.roadMap.addNode(Node.withID(Integer.parseInt(split[i]))
-                                .atLocation(Location.newFromLatLon(Double.parseDouble(split[i+1]),
-                                                                   Double.parseDouble(split[i+2]))));
-                }
+                int nodeID = Integer.parseInt(split[0]);
+                double lat = Double.parseDouble(split[1]);
+                double lon = Double.parseDouble(split[2]);
+                this.roadMap.addNode(Node.withID(nodeID)
+                                         .atLocation(Location.newFromLatLon(lat,lon)));
             }
-        } catch (IOException e){
-            e.printStackTrace();
         }
-
-
-
-
     }
+
+    private void loadRoads() throws IOException{
+        try (BufferedReader reader = new BufferedReader(new FileReader(this.roadFile))){
+            String line = reader.readLine();
+            while((line = reader.readLine()) != null){
+                String[] split = line.split("\t");
+                int roadID = Integer.parseInt(split[0]);
+                String name = split[2];
+                String city = split[3];
+                int oneway = Integer.parseInt(split[4]);
+                int speed = Integer.parseInt(split[5]);
+                int roadClass = Integer.parseInt(split[6]);
+                int notforcar = Integer.parseInt(split[7]);
+                int notforped = Integer.parseInt(split[8]);
+                int notforbicy = Integer.parseInt(split[9]);
+
+                this.roadMap.addRoad(Road.Builder.createWithID(roadID)
+                                                 .name(name)
+                                                 .city(city)
+                                                 .isOneWay(oneway)
+                                                 .speedlimit(speed)
+                                                 .roadClass(roadClass)
+                                                 .isNotForCar(notforcar)
+                                                 .isNotForPed(notforped)
+                                                 .isNotForBicycle(notforbicy)
+                                                 .build());
+            }
+        }
+    }
+
+    private void loadSegments() throws IOException{
+        try (BufferedReader reader = new BufferedReader(new FileReader(this.segmentFile))){
+            String line = reader.readLine();
+            while ((line = reader.readLine()) != null){
+                String[] split = line.split("\t");
+                Road road = this.roadMap.getRoads().get(Integer.parseInt(split[0]));
+                double length = Double.parseDouble(split[1]);
+                Node toNode = this.roadMap.getNodes().get(Integer.parseInt(split[2]));
+                Node fromNode = this.roadMap.getNodes().get(Integer.parseInt(split[3]));
+                ArrayList<Location> coords = new ArrayList<Location>();
+                for (int i = 4; i < split.length; i+=2){
+                    double lat = Double.parseDouble(split[i]);
+                    double lon = Double.parseDouble(split[i+1]);
+                    coords.add(Location.newFromLatLon(lat, lon));
+                }
+                Segment s = Segment.withCoords(coords)
+                                   .onRoad(road)
+                                   .withLength(length)
+                                   .toNode(toNode)
+                                   .fromNode(fromNode);
+                this.roadMap.addSegment(s);
+            }
+        }
+    }
+
 }

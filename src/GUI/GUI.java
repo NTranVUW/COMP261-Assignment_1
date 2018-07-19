@@ -12,6 +12,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -94,7 +95,7 @@ public abstract class GUI {
      *            a File for polygon-shapes.mp
      */
     protected abstract void onLoad(File nodes, File roads, File segments,
-                                   File polygons);
+                                   File polygons) throws IOException;
 
     // here are some useful methods you'll need.
 
@@ -228,7 +229,11 @@ public abstract class GUI {
                                 "Directory does not contain correct files",
                                 "Error", JOptionPane.ERROR_MESSAGE);
                     } else {
-                        onLoad(nodes, roads, segments, polygons);
+                        try {
+                            onLoad(nodes, roads, segments, polygons);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         redraw();
                     }
                 }

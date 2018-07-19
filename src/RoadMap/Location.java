@@ -109,6 +109,14 @@ public class Location {
         return Math.abs(this.x - other.x) + Math.abs(this.y - other.y) <= dist;
     }
 
+    public static double getCentreLat() {
+        return CENTRE_LAT;
+    }
+
+    public static double getCentreLon() {
+        return CENTRE_LON;
+    }
+
     public String toString() {
         return String.format("(%.3f, %.3f)", x, y);
     }

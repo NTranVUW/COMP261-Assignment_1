@@ -24,6 +24,7 @@ public class Drawer {
     public Drawer drawNodes(HashMap<Integer, Node> nodes, Location origin, double scale){
         for (Map.Entry m : nodes.entrySet()){
             Node node = (Node) m.getValue();
+
             node.draw(g, origin, scale);
         }
         return this;
@@ -34,5 +35,4 @@ public class Drawer {
         }
         return this;
     }
-
 }

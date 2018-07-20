@@ -1,5 +1,7 @@
 package RoadMap;
 
+import java.util.ArrayList;
+
 public class Road {
 
     public enum RoadClass{
@@ -10,6 +12,8 @@ public class Road {
     private final String name, city;
     private final boolean oneway, notforcar,notforped, notforbicycle;
     private final RoadClass roadClass;
+    private final ArrayList<Segment> segments = new ArrayList<Segment>();
+    private boolean highlighted;
 
 
     public static class Builder {
@@ -91,5 +95,25 @@ public class Road {
 
     public int getRoadID(){
         return this.roadID;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public ArrayList<Segment> getSegments() {
+        return segments;
+    }
+
+    public void addSegment(Segment s){
+        segments.add(s);
+    }
+
+    public void setHighlighted(boolean highlighted) {
+        this.highlighted = highlighted;
+    }
+
+    public boolean isHighlighted() {
+        return highlighted;
     }
 }

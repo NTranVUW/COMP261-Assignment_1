@@ -3,10 +3,14 @@ package RoadMap;
 import RoadMap.Location;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 public class Node {
-    private int nodeID;
+    private final int nodeID;
+    private final ArrayList<Segment> inSegments = new ArrayList<Segment>();
+    private final ArrayList<Segment> outSegments = new ArrayList<Segment>();
     private Location location;
+    private boolean highlighted;
 
     private Node(int nodeID){
         this.nodeID = nodeID;
@@ -25,8 +29,32 @@ public class Node {
     public Location getLocation() { return this.location; }
 
     public void draw(Graphics g, Location origin, double scale){
-        g.setColor(new Color( 48, 51, 107));
+        if (highlighted){
+            g.setColor(new Color( 104, 109, 224));
+        } else {g.setColor(new Color( 48, 51, 107));}
         Point point = location.asPoint(origin, scale);
-        g.fillOval((int)point.x, (int)point.y, 10, 10);
+        int size;
+        if (scale <= 7) {size = (int) scale;} else {size = 7;}
+        g.fillRect(point.x, point.y, size, size);
+    }
+
+    public void setHighlighted(boolean highlighted) {
+        this.highlighted = highlighted;
+    }
+
+    public ArrayList<Segment> getInSegments() {
+        return inSegments;
+    }
+
+    public ArrayList<Segment> getOutSegments() {
+        return outSegments;
+    }
+
+    public void addInSegment(Segment s){
+        inSegments.add(s);
+    }
+
+    public void addOutSegment(Segment s){
+        outSegments.add(s);
     }
 }

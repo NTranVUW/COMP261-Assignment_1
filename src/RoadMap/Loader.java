@@ -119,6 +119,9 @@ public class Loader {
                                    .toNode(toNode)
                                    .fromNode(fromNode);
                 this.roadMap.addSegment(s);
+                road.addSegment(s);
+                toNode.addInSegment(s);
+                fromNode.addOutSegment(s);
             }
         }
     }

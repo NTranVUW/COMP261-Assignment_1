@@ -28,18 +28,25 @@ public class Segment {
      public Segment fromNode(Node node){ this.fromNode = node; return this; }
 
      public void draw(Graphics g, Location origin, double scale){
-        System.out.println(1);
-        g.setColor(new Color(224, 86, 253));
+        if (road.isHighlighted()){
+            g.setColor(new Color(249, 202, 36));
+        } else { g.setColor(new Color(224, 86, 253)); }
+
         for (int i = 0; i < coords.size(); i++){
+            Point from;
+            Point to;
             if (i == 0){
-                Point from = coords.get(i).asPoint(origin, scale);
-                Point to = coords.get(i+1).asPoint(origin, scale);
-                g.drawLine(from.x, from.y, to.x, to.y);
+                from = coords.get(i).asPoint(origin, scale);
+                to = coords.get(i+1).asPoint(origin, scale);
             } else {
-                Point from = coords.get(i-1).asPoint(origin, scale);
-                Point to = coords.get(i).asPoint(origin, scale);
-                g.drawLine(from.x, from.y, to.x, to.y);
+                from = coords.get(i-1).asPoint(origin, scale);
+                to = coords.get(i).asPoint(origin, scale);
             }
+            g.drawLine(from.x, from.y, to.x, to.y);
         }
      }
+
+    public Road getRoad() {
+        return road;
+    }
 }

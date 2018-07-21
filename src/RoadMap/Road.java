@@ -15,7 +15,6 @@ public class Road {
     private final ArrayList<Segment> segments = new ArrayList<Segment>();
     private boolean highlighted;
 
-
     public static class Builder {
         private final int roadID;
 
@@ -100,6 +99,8 @@ public class Road {
     public String getName() {
         return name;
     }
+
+    public String getFullName() { return name + ", " + city;}
 
     public ArrayList<Segment> getSegments() {
         return segments;

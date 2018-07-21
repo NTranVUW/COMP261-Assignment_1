@@ -19,7 +19,7 @@ public class MapGUI extends GUI {
     private Location origin;
     private double scale;
     private Node highlightedNode;
-    private Road highlightedRoad;
+    private ArrayList<Road> highlightedRoads;
 
     protected void calcScale(){
         Double top = Double.NEGATIVE_INFINITY;
@@ -50,9 +50,6 @@ public class MapGUI extends GUI {
 
     @Override
     protected void redraw(Graphics g) {
-        if (highlightedRoad != null){
-            System.out.println("Highlighted: " + highlightedRoad.getName());
-        }
         //System.out.println("Scale: " + scale);
         drawer.drawTo(g)
               .drawSegments(roadMap.getSegments(), origin, scale)
@@ -118,14 +115,17 @@ public class MapGUI extends GUI {
     @Override
     protected void onSearch() {
         String input  = getSearchBox().getText();
+        if (highlightedRoads != null){
+            for (Road r : highlightedRoads){
+                r.setHighlighted(false);
+            }
+        }
+        highlightedRoads = new ArrayList<Road>();
         for (Road r : this.roadMap.getRoads().values()){
-            if (r.getName().equals(input)){
-                if (highlightedRoad != null){
-                    highlightedRoad.setHighlighted(false);
-                }
-                System.out.println("name: " + r.getName());
-                highlightedRoad = r;
+            if (r.getName().equals(input) || r.getFullName().equals(input)){
                 r.setHighlighted(true);
+                highlightedRoads.add(r);
+                System.out.println("name: " + r.getName());
             }
         }
 

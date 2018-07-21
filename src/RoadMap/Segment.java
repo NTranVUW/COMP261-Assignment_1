@@ -29,8 +29,9 @@ public class Segment {
 
      public void draw(Graphics g, Location origin, double scale){
         if (road.isHighlighted()){
-            g.setColor(new Color(249, 202, 36));
-        } else { g.setColor(new Color(224, 86, 253)); }
+            System.out.println("drawing highlighted segment");
+            g.setColor(new Color(48, 51, 107));
+        } else { g.setColor(new Color(186, 220, 88)); }
 
         for (int i = 0; i < coords.size(); i++){
             Point from;

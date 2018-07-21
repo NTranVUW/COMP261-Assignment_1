@@ -30,8 +30,8 @@ public class Node {
 
     public void draw(Graphics g, Location origin, double scale){
         if (highlighted){
-            g.setColor(new Color( 104, 109, 224));
-        } else {g.setColor(new Color( 48, 51, 107));}
+            g.setColor(new Color( 19, 15, 64));
+        } else {g.setColor(new Color( 106, 176, 76));}
         Point point = location.asPoint(origin, scale);
         int size;
         if (scale <= 7) {size = (int) scale;} else {size = 7;}

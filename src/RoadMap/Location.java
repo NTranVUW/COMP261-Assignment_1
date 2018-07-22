@@ -89,9 +89,7 @@ public class Location {
      * given dx and dy, ie. this returns a RoadMap.Location representing (x + dx, y +
      * dy).
      */
-    public Location moveBy(double dx, double dy) {
-        return new Location(x + dx, y + dy);
-    }
+    public Location moveBy(double dx, double dy) { return new Location(x + dx, y + dy); }
 
     /**
      * Return distance between this location and another

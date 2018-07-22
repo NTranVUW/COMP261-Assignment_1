@@ -1,5 +1,6 @@
 package RoadMap;
 
+import Trie.Trie;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -41,12 +42,12 @@ public class Loader {
         this.polygonFile = builder.polygonFile;
     }
 
-    public Loader load() throws IOException{
+    public Loader load(Trie trie) throws IOException{
         if (this.nodeFile != null){
             this.loadNodes();
         }
         if (this.roadFile != null){
-            this.loadRoads();
+            this.loadRoads(trie);
         }
         if (this.segmentFile != null){
             this.loadSegments();
@@ -69,7 +70,7 @@ public class Loader {
         }
     }
 
-    private void loadRoads() throws IOException{
+    private void loadRoads(Trie trie) throws IOException{
         try (BufferedReader reader = new BufferedReader(new FileReader(this.roadFile))){
             String line = reader.readLine();
             while((line = reader.readLine()) != null){
@@ -84,16 +85,18 @@ public class Loader {
                 int notforped = Integer.parseInt(split[8]);
                 int notforbicy = Integer.parseInt(split[9]);
 
-                this.roadMap.addRoad(Road.Builder.createWithID(roadID)
-                                                 .name(name)
-                                                 .city(city)
-                                                 .isOneWay(oneway)
-                                                 .speedlimit(speed)
-                                                 .roadClass(roadClass)
-                                                 .isNotForCar(notforcar)
-                                                 .isNotForPed(notforped)
-                                                 .isNotForBicycle(notforbicy)
-                                                 .build());
+                Road road = Road.Builder.createWithID(roadID)
+                                        .name(name)
+                                        .city(city)
+                                        .isOneWay(oneway)
+                                        .speedlimit(speed)
+                                        .roadClass(roadClass)
+                                        .isNotForCar(notforcar)
+                                        .isNotForPed(notforped)
+                                        .isNotForBicycle(notforbicy)
+                                        .build();
+                this.roadMap.addRoad(road);
+                trie.add(road.getName().toCharArray(), road);
             }
         }
     }

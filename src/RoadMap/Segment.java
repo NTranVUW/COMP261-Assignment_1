@@ -29,7 +29,6 @@ public class Segment {
 
      public void draw(Graphics g, Location origin, double scale){
         if (road.isHighlighted()){
-            System.out.println("drawing highlighted segment");
             g.setColor(new Color(48, 51, 107));
         } else { g.setColor(new Color(186, 220, 88)); }
 

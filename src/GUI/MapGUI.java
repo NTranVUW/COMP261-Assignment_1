@@ -7,15 +7,18 @@ import RoadMap.Location;
 import RoadMap.Node;
 import RoadMap.Segment;
 import RoadMap.Road;
+import Trie.Trie;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MapGUI extends GUI {
     private final RoadMap roadMap = RoadMap.newInstance();
     private final Drawer drawer = Drawer.create();
+    private final Trie trie = Trie.create();
     private Location origin;
     private double scale;
     private Node highlightedNode;
@@ -43,7 +46,7 @@ public class MapGUI extends GUI {
             double heightDiff = top - bottom;
             double widthDiff = right-left;
             Dimension window = super.getDrawingAreaDimension();
-            scale = Math.min((window.height/heightDiff), (window.width/widthDiff));
+            scale = Math.max((window.height/heightDiff), (window.width/widthDiff));
             origin = new Location(left, top);
         }
     }
@@ -65,23 +68,10 @@ public class MapGUI extends GUI {
         Node closestNode = null;
         for (Node n : this.roadMap.getNodes().values()){
             double dist = n.getLocation().distance(clickLocation);
-            if (dist < closestDist && n.getLocation().isClose(clickLocation, scale*0.125)){
+            if (dist < closestDist && n.getLocation().isClose(clickLocation, 0.5)){
                 closestDist = dist;
                 closestNode = n;
             }
-
-            /**
-            double dist;
-            if (scale <= 7) {dist =  scale;} else {dist = 7;}
-            if (n.getLocation().isClose(clickLocation, dist)){
-                if (highlightedNode != null){
-                    highlightedNode.setHighlighted(false);
-                }
-                n.setHighlighted(true);
-                highlightedNode = n;
-                getTextOutputArea().setText("Node ID" + n.getNodeID());
-            }
-             */
         }
         if (highlightedNode != null){
             highlightedNode.setHighlighted(false);
@@ -110,11 +100,42 @@ public class MapGUI extends GUI {
                 else { getTextOutputArea().append(roadNames.get(i)); }
             }
         }
+
+
     }
 
     @Override
     protected void onSearch() {
         String input  = getSearchBox().getText();
+        List<Object> getExactMatch = trie.get(input.toCharArray());
+        List<Object> getMatchingPrefix = trie.getAll(input.toCharArray());
+        if (highlightedRoads != null){
+            for (Road r : highlightedRoads){
+                r.setHighlighted(false);
+            }
+        }
+        highlightedRoads = new ArrayList<Road>();
+        if (!getExactMatch.isEmpty()){
+            System.out.println("exact not null");
+            for (Object o : getExactMatch){
+                Road r = (Road) o;
+                System.out.println("exact: " + r.getName());
+                r.setHighlighted(true);
+                highlightedRoads.add(r);
+            }
+        } else if (!getMatchingPrefix.isEmpty()){
+            System.out.println("gui not null");
+            for (Object l : (List<Object>) getMatchingPrefix){
+                for (Object o : (List<Object>) l){
+                    Road r = (Road) o;
+                    System.out.println("prefix: " + r.getName());
+                    r.setHighlighted(true);
+                    highlightedRoads.add(r);
+                }
+
+            }
+        }
+        /**
         if (highlightedRoads != null){
             for (Road r : highlightedRoads){
                 r.setHighlighted(false);
@@ -128,7 +149,7 @@ public class MapGUI extends GUI {
                 System.out.println("name: " + r.getName());
             }
         }
-
+        */
     }
 
     @Override
@@ -161,11 +182,9 @@ public class MapGUI extends GUI {
         Loader loader = new Loader.Builder(this.roadMap)
                                   .nodeFile(nodes)
                                   .roadFile(roads)
-                                  .segmentFile(segments).build().load();
+                                  .segmentFile(segments).build().load(trie);
         calcScale();
     }
 
-    public static void main(String[] args){
-        final MapGUI mapGUI = new MapGUI();
-    }
+    public static void main(String[] args){ final MapGUI mapGUI = new MapGUI(); }
 }

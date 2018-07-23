@@ -115,26 +115,35 @@ public class MapGUI extends GUI {
             }
         }
         highlightedRoads = new ArrayList<Road>();
-        if (!getExactMatch.isEmpty()){
-            System.out.println("exact not null");
-            for (Object o : getExactMatch){
-                Road r = (Road) o;
-                System.out.println("exact: " + r.getName());
-                r.setHighlighted(true);
-                highlightedRoads.add(r);
-            }
-        } else if (!getMatchingPrefix.isEmpty()){
-            System.out.println("gui not null");
-            for (Object l : (List<Object>) getMatchingPrefix){
-                for (Object o : (List<Object>) l){
-                    Road r = (Road) o;
-                    System.out.println("prefix: " + r.getName());
-                    r.setHighlighted(true);
-                    highlightedRoads.add(r);
+        if (getExactMatch != null){
+            if (!getExactMatch.isEmpty()){
+                System.out.println("exact not null");
+                for (Object o : getExactMatch){
+                    if (o != null){
+                        Road r = (Road) o;
+                        System.out.println("exact: " + r.getName());
+                        r.setHighlighted(true);
+                        highlightedRoads.add(r);
+                    }
                 }
+            } else if (!getMatchingPrefix.isEmpty()){
+                System.out.println("gui not null");
+                for (Object l : (List<Object>) getMatchingPrefix){
+                    if (l != null) {
+                        for (Object o : (List<Object>) l){
+                            if (o != null) {
+                                Road r = (Road) o;
+                                System.out.println("prefix: " + r.getName());
+                                r.setHighlighted(true);
+                                highlightedRoads.add(r);
+                            }
 
+                        }
+                    }
+                }
             }
         }
+
         /**
         if (highlightedRoads != null){
             for (Road r : highlightedRoads){

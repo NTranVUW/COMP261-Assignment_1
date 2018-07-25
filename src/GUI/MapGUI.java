@@ -1,5 +1,6 @@
 package GUI;
 
+import QuadTree.QuadTree;
 import RoadMap.RoadMap;
 import RoadMap.Loader;
 import RoadMap.Drawer;
@@ -10,6 +11,7 @@ import RoadMap.Road;
 import Trie.Trie;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,10 +21,11 @@ public class MapGUI extends GUI {
     private final RoadMap roadMap = RoadMap.newInstance();
     private final Drawer drawer = Drawer.create();
     private final Trie trie = Trie.create();
-    private Location origin;
+    private Location origin = Location.newFromLatLon(0,0);
     private double scale;
     private Node highlightedNode;
     private ArrayList<Road> highlightedRoads;
+    private QuadTree quad;
 
     protected void calcScale(){
         Double top = Double.NEGATIVE_INFINITY;
@@ -54,9 +57,13 @@ public class MapGUI extends GUI {
     @Override
     protected void redraw(Graphics g) {
         //System.out.println("Scale: " + scale);
-        drawer.drawTo(g)
+        drawer.drawTo((Graphics2D) g)
               .drawSegments(roadMap.getSegments(), origin, scale)
               .drawNodes(roadMap.getNodes(), origin, scale);
+
+        if (quad != null){
+            drawer.drawQuad(quad, origin, scale);
+        }
     }
 
     @Override
@@ -107,6 +114,12 @@ public class MapGUI extends GUI {
     @Override
     protected void onSearch() {
         String input  = getSearchBox().getText();
+        if (input.isEmpty()){
+            for (Road r : highlightedRoads){
+                r.setHighlighted(false);
+            }
+            return;
+        }
         List<Object> getExactMatch = trie.get(input.toCharArray());
         List<Object> getMatchingPrefix = trie.getAll(input.toCharArray());
         if (highlightedRoads != null){
@@ -117,23 +130,19 @@ public class MapGUI extends GUI {
         highlightedRoads = new ArrayList<Road>();
         if (getExactMatch != null){
             if (!getExactMatch.isEmpty()){
-                System.out.println("exact not null");
                 for (Object o : getExactMatch){
                     if (o != null){
                         Road r = (Road) o;
-                        System.out.println("exact: " + r.getName());
                         r.setHighlighted(true);
                         highlightedRoads.add(r);
                     }
                 }
             } else if (!getMatchingPrefix.isEmpty()){
-                System.out.println("gui not null");
                 for (Object l : (List<Object>) getMatchingPrefix){
                     if (l != null) {
                         for (Object o : (List<Object>) l){
                             if (o != null) {
                                 Road r = (Road) o;
-                                System.out.println("prefix: " + r.getName());
                                 r.setHighlighted(true);
                                 highlightedRoads.add(r);
                             }
@@ -143,22 +152,6 @@ public class MapGUI extends GUI {
                 }
             }
         }
-
-        /**
-        if (highlightedRoads != null){
-            for (Road r : highlightedRoads){
-                r.setHighlighted(false);
-            }
-        }
-        highlightedRoads = new ArrayList<Road>();
-        for (Road r : this.roadMap.getRoads().values()){
-            if (r.getName().equals(input) || r.getFullName().equals(input)){
-                r.setHighlighted(true);
-                highlightedRoads.add(r);
-                System.out.println("name: " + r.getName());
-            }
-        }
-        */
     }
 
     @Override
@@ -188,10 +181,16 @@ public class MapGUI extends GUI {
 
     @Override
     protected void onLoad(File nodes, File roads, File segments, File polygons) throws IOException {
+        quad = QuadTree.createFrom(0, 0, getDrawingAreaDimension().width, getDrawingAreaDimension().height);
+        for (int i = 0; i < getDrawingAreaDimension().width; i++){
+            for (int j = 0; j < getDrawingAreaDimension().height; j++){
+                quad.insert(new Point2D.Double(i,j));
+            }
+        }
         Loader loader = new Loader.Builder(this.roadMap)
                                   .nodeFile(nodes)
                                   .roadFile(roads)
-                                  .segmentFile(segments).build().load(trie);
+                                  .segmentFile(segments).build().load(trie, quad, origin, scale);
         calcScale();
     }
 

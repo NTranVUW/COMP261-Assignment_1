@@ -1,9 +1,6 @@
 package GUI;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -306,8 +303,8 @@ public abstract class GUI {
             search.addKeyListener(new KeyAdapter() {
                 public void keyReleased(KeyEvent e) {
                     // don't fire an event on backspace or delete
-                    if (e.getKeyCode() == 8 || e.getKeyCode() == 127)
-                        return;
+                    //if (e.getKeyCode() == 8 || e.getKeyCode() == 127)
+                        //return;
                     search.postActionEvent();
                 }
             });
@@ -390,6 +387,14 @@ public abstract class GUI {
 
         drawing.addMouseWheelListener(new MouseAdapter() {
             public void mouseWheelMoved(MouseWheelEvent e) {
+                int MouseWheelRotation = e.getWheelRotation();
+                if (MouseWheelRotation < 0){
+                    onMove(Move.ZOOM_IN);
+                }
+                if (MouseWheelRotation > 0){
+                    onMove(Move.ZOOM_OUT);
+                }
+                redraw();
             }
         });
 

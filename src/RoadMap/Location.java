@@ -1,6 +1,7 @@
 package RoadMap;
 
 import java.awt.Point;
+import java.awt.geom.Point2D;
 
 /**
  * A RoadMap.Location is a point in a 2D coordinate system, with increasing x from west
@@ -60,15 +61,33 @@ public class Location {
     }
 
     /**
+     * Makes a new Point2D object from this RoadMap.Location object and returns it. To
+     * create this Point2D, an origin location and the scale of the window are
+     * required. Note the vertical direction is inverted
+     */
+    public Point2D asPoint2D(Location origin, double scale) {
+        double u = ((x - origin.x) * scale);
+        double v = ((origin.y - y) * scale);
+        return new Point2D.Double(u, v);
+    }
+
+    /**
      * Create a new RoadMap.Location object from a given Point object, as well as the
      * origin and scale. This is effectively the opposite of the asPoint method.
      */
-    public static Location newFromPoint(Point point, Location origin,
-                                        double scale) {
+    public static Location newFromPoint(Point point, Location origin, double scale) {
         return new Location(point.x / scale + origin.x, origin.y - point.y
                 / scale);
     }
 
+    /**
+     * Create a new RoadMap.Location object from a given Point2D object, as well as the
+     * origin and scale. This is effectively the opposite of the asPoint method.
+     */
+    public static Location newFromPoint2D(Point2D point, Location origin, double scale) {
+        return new Location(point.getX() / scale + origin.x, origin.y - point.getY()
+                / scale);
+    }
     /**
      * Create a new RoadMap.Location object from the given latitude and longitude, which
      * is the format used in the data files.

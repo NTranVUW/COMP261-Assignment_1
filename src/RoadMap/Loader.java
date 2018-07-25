@@ -1,5 +1,6 @@
 package RoadMap;
 
+import QuadTree.QuadTree;
 import Trie.Trie;
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,6 +14,8 @@ public class Loader {
     private final File roadFile;
     private final File segmentFile;
     private final File polygonFile;
+
+    private int count = 0;
 
     public static class Builder {
         private final RoadMap roadMap;
@@ -42,9 +45,9 @@ public class Loader {
         this.polygonFile = builder.polygonFile;
     }
 
-    public Loader load(Trie trie) throws IOException{
+    public Loader load(Trie trie, QuadTree quad, Location origin, double scale) throws IOException{
         if (this.nodeFile != null){
-            this.loadNodes();
+            this.loadNodes(quad, origin, scale);
         }
         if (this.roadFile != null){
             this.loadRoads(trie);
@@ -56,7 +59,7 @@ public class Loader {
         return this;
     }
 
-    private void loadNodes()throws IOException{
+    private void loadNodes(QuadTree quad, Location origin, double scale)throws IOException{
         try (BufferedReader reader = new BufferedReader(new FileReader(this.nodeFile))){
             String line = null;
             while((line = reader.readLine()) != null){
@@ -64,8 +67,10 @@ public class Loader {
                 int nodeID = Integer.parseInt(split[0]);
                 double lat = Double.parseDouble(split[1]);
                 double lon = Double.parseDouble(split[2]);
-                this.roadMap.addNode(Node.withID(nodeID)
-                                         .atLocation(Location.newFromLatLon(lat,lon)));
+                Location location = Location.newFromLatLon(lat,lon);
+                Node node = Node.withID(nodeID)
+                                .atLocation(location);
+                this.roadMap.addNode(node);
             }
         }
     }
@@ -97,6 +102,7 @@ public class Loader {
                                         .build();
                 this.roadMap.addRoad(road);
                 trie.add(road.getName().toCharArray(), road);
+                trie.add(road.getFullName().toCharArray(), road);
             }
         }
     }

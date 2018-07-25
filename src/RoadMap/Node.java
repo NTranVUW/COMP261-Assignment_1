@@ -3,6 +3,8 @@ package RoadMap;
 import RoadMap.Location;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 public class Node {
@@ -28,14 +30,15 @@ public class Node {
     }
     public Location getLocation() { return this.location; }
 
-    public void draw(Graphics g, Location origin, double scale){
+    public void draw(Graphics2D g, Location origin, double scale){
         if (highlighted){
             g.setColor(new Color( 19, 15, 64));
         } else {g.setColor(new Color( 106, 176, 76));}
-        Point point = location.asPoint(origin, scale);
-        int size;
-        if (scale <= 7) {size = (int) scale;} else {size = 7;}
-        g.fillRect(point.x, point.y, size, size);
+        Point2D point = location.asPoint2D(origin, scale);
+        double size;
+        if (scale <= 7) {size = scale;} else {size = 7;}
+        Rectangle2D rect = new Rectangle2D.Double(point.getX(), point.getY(), size, size);
+        g.fill(rect);
     }
 
     public void setHighlighted(boolean highlighted) {

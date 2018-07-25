@@ -1,6 +1,8 @@
 package RoadMap;
 
 import java.awt.*;
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import RoadMap.Location;
 
@@ -27,22 +29,23 @@ public class Segment {
 
      public Segment fromNode(Node node){ this.fromNode = node; return this; }
 
-     public void draw(Graphics g, Location origin, double scale){
+     public void draw(Graphics2D g, Location origin, double scale){
         if (road.isHighlighted()){
             g.setColor(new Color(48, 51, 107));
         } else { g.setColor(new Color(186, 220, 88)); }
 
         for (int i = 0; i < coords.size(); i++){
-            Point from;
-            Point to;
+            Point2D from;
+            Point2D to;
             if (i == 0){
-                from = coords.get(i).asPoint(origin, scale);
-                to = coords.get(i+1).asPoint(origin, scale);
+                from = coords.get(i).asPoint2D(origin, scale);
+                to = coords.get(i+1).asPoint2D(origin, scale);
             } else {
-                from = coords.get(i-1).asPoint(origin, scale);
-                to = coords.get(i).asPoint(origin, scale);
+                from = coords.get(i-1).asPoint2D(origin, scale);
+                to = coords.get(i).asPoint2D(origin, scale);
             }
-            g.drawLine(from.x, from.y, to.x, to.y);
+            Line2D line = new Line2D.Double(from.getX(), from.getY(), to.getX(), to.getY());
+            g.draw(line);
         }
      }
 

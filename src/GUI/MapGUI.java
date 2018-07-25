@@ -26,6 +26,7 @@ public class MapGUI extends GUI {
     private Node highlightedNode;
     private ArrayList<Road> highlightedRoads;
     private QuadTree quad;
+    private Location pressedLocation;
 
     protected void calcScale(){
         Double top = Double.NEGATIVE_INFINITY;
@@ -61,9 +62,9 @@ public class MapGUI extends GUI {
               .drawSegments(roadMap.getSegments(), origin, scale)
               .drawNodes(roadMap.getNodes(), origin, scale);
 
-        if (quad != null){
-            drawer.drawQuad(quad, origin, scale);
-        }
+       // if (quad != null){
+         //   drawer.drawQuad(quad, origin, scale);
+       // }
     }
 
     @Override
@@ -109,6 +110,21 @@ public class MapGUI extends GUI {
         }
 
 
+    }
+
+    @Override
+    protected void onPress(MouseEvent e) {
+        pressedLocation = Location.newFromPoint(e.getPoint(), origin, scale);
+    }
+
+    @Override
+    protected void onDrag(MouseEvent e) {
+         Location draggedLocation = Location.newFromPoint(e.getPoint(), origin, scale);
+         Point pressedPoint = pressedLocation.asPoint(origin, scale);
+         Point draggedPoint = draggedLocation.asPoint(origin, scale);
+         int draggedX = draggedPoint.x - pressedPoint.x;
+         int draggedY = draggedPoint.y - pressedPoint.y;
+         origin = origin.moveBy(draggedX/100, draggedY/100);
     }
 
     @Override
@@ -171,9 +187,11 @@ public class MapGUI extends GUI {
                 break;
             case ZOOM_IN:
                 scale = scale+(scale/5);
+                //origin = Location.newFromPoint(MouseInfo.getPointerInfo().getLocation(), origin, scale);
                 break;
             case ZOOM_OUT:
                 scale = scale-(scale/5);
+                //origin = Location.newFromPoint(MouseInfo.getPointerInfo().getLocation(), origin, scale);
                 break;
         }
 
@@ -181,12 +199,12 @@ public class MapGUI extends GUI {
 
     @Override
     protected void onLoad(File nodes, File roads, File segments, File polygons) throws IOException {
-        quad = QuadTree.createFrom(0, 0, getDrawingAreaDimension().width, getDrawingAreaDimension().height);
-        for (int i = 0; i < getDrawingAreaDimension().width; i++){
-            for (int j = 0; j < getDrawingAreaDimension().height; j++){
-                quad.insert(new Point2D.Double(i,j));
-            }
-        }
+        //quad = QuadTree.createFrom(0, 0, getDrawingAreaDimension().width, getDrawingAreaDimension().height);
+        //for (int i = 0; i < getDrawingAreaDimension().width; i++){
+            //for (int j = 0; j < getDrawingAreaDimension().height; j++){
+                //quad.insert(new Point2D.Double(i,j));
+            //}
+        //}
         Loader loader = new Loader.Builder(this.roadMap)
                                   .nodeFile(nodes)
                                   .roadFile(roads)

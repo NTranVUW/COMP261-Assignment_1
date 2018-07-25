@@ -34,7 +34,6 @@ public class QuadTree {
     }
 
     public boolean insert(Point2D p){
-        System.out.println("capacity: " + points.size());
         if (!boundary.contains(p)){
             System.out.println("false");
             return false;
@@ -92,7 +91,6 @@ public class QuadTree {
 
         Rectangle2D rect = new Rectangle2D.Double(newX, newY, newWidth, newHeight);
         g.draw(rect);
-        System.out.println(rect.getX());
 
         if (northWest == null){
             return;

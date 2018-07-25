@@ -65,6 +65,16 @@ public abstract class GUI {
     protected abstract void onClick(MouseEvent e);
 
     /**
+     * Is called when the mouse is pressed and is passed the MouseEvent object for that press.
+     */
+    protected abstract void onPress(MouseEvent e);
+
+    /**
+     * Is called when the mouse is dragged and is passed the MouseEvent object for that drag.
+     */
+    protected abstract void onDrag(MouseEvent e);
+
+    /**
      * Is called whenever the search box is updated. Use getSearchBox to get the
      * JTextField object that is the search box itself.
      */
@@ -378,14 +388,19 @@ public abstract class GUI {
         // drawn until it is resized.
         drawing.setVisible(true);
 
-        drawing.addMouseListener(new MouseAdapter() {
-            public void mouseReleased(MouseEvent e) {
+        MouseAdapter m = new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
                 onClick(e);
                 redraw();
             }
-        });
-
-        drawing.addMouseWheelListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e){
+                onPress(e);
+                redraw();
+            }
+            public void mouseDragged(MouseEvent e){
+                onDrag(e);
+                redraw();
+            }
             public void mouseWheelMoved(MouseWheelEvent e) {
                 int MouseWheelRotation = e.getWheelRotation();
                 if (MouseWheelRotation < 0){
@@ -396,7 +411,11 @@ public abstract class GUI {
                 }
                 redraw();
             }
-        });
+        };
+
+        drawing.addMouseListener(m);
+        drawing.addMouseMotionListener(m);
+        drawing.addMouseWheelListener(m);
 
         /*
          * then make the JTextArea that goes down the bottom. we put this in a

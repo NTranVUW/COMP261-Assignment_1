@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Loader {
     private final RoadMap roadMap;
@@ -55,7 +57,9 @@ public class Loader {
         if (this.segmentFile != null){
             this.loadSegments();
         }
-
+        if (this.polygonFile != null){
+            this.loadPolygons();
+        }
         return this;
     }
 
@@ -133,6 +137,55 @@ public class Loader {
                 fromNode.addOutSegment(s);
             }
         }
+    }
+
+    private void loadPolygons() throws IOException{
+        try (BufferedReader reader = new BufferedReader(new FileReader(this.polygonFile))){
+            String line;
+            String[] split;
+            Polygon poly = Polygon.create();
+            while ((line = reader.readLine()) != null){
+                if (line.equals("[POLYGON]")){
+                    poly = Polygon.create();
+                }
+                if (line.startsWith("Type")){
+                    split = line.split("=");
+                    poly.ofType(split[1]);
+                }
+                if (line.startsWith("Label")){
+                    split = line.split("=");
+                    poly.withLabel(split[1]);
+                }
+                if (line.startsWith("EndLevel")){
+                    split = line.split("=");
+                    poly.withEndLevel(Integer.parseInt(split[1]));
+                }
+                if (line.startsWith("CityIdx")){
+                    split = line.split("=");
+                    poly.withCityIdx(Integer.parseInt(split[1]));
+                }
+                if (line.startsWith("Data0")){
+                    split = line.split("[=(),]");
+                    ArrayList<String> strlist = new ArrayList<>();
+                    for (String s : split){
+                        if (!s.isEmpty()){
+                            strlist.add(s);
+                        }
+                    }
+                    for (int i = 1; i < strlist.size(); i+=2){
+                        double lat = Double.parseDouble(strlist.get(i));
+                        double lon = Double.parseDouble(strlist.get(i+1));
+                        Location coord = Location.newFromLatLon(lat, lon);
+                        poly.addCoord(coord);
+                    }
+                }
+                if (line.equals("[END]")){
+                    roadMap.addPolygon(poly);
+                }
+            }
+
+        }
+
     }
 
 }

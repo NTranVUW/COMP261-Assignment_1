@@ -1,5 +1,6 @@
 package RoadMap;
 
+import GUI.ColorFactory;
 import RoadMap.Location;
 
 import java.awt.*;
@@ -31,9 +32,11 @@ public class Node {
     public Location getLocation() { return this.location; }
 
     public void draw(Graphics2D g, Location origin, double scale){
+        Color c;
         if (highlighted){
-            g.setColor(new Color( 19, 15, 64));
-        } else {g.setColor(new Color( 106, 176, 76));}
+            c = ColorFactory.getHighlightedNodeColor();
+        } else {c = ColorFactory.getNodeColor();}
+        g.setColor(c);
         Point2D point = location.asPoint2D(origin, scale);
         double size;
         if (scale <= 7) {size = scale;} else {size = 7;}

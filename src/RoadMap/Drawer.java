@@ -2,6 +2,8 @@ package RoadMap;
 
 import RoadMap.Node;
 import QuadTree.QuadTree;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -39,6 +41,34 @@ public class Drawer {
 
     public Drawer drawQuad(QuadTree quad, Location origin, double scale){
         quad.draw(g, origin, scale);
+        return this;
+    }
+
+    public Drawer drawPolygons(ArrayList<Polygon> polygons, Location origin, double scale){
+        for (Polygon p : polygons){
+            int endLevel = p.getEndLevel();
+            boolean draw = false;
+            switch(endLevel){
+                case 2:
+                    if (scale > 5){
+                        draw = true;
+                    }
+                case 1:
+                    if (scale > 10){
+                        draw = true;
+                    }
+                case 3:
+                    if (scale > 0){
+                        draw = true;
+                    }
+            }
+
+                if (draw){
+                    p.draw(g, origin, scale);
+                }
+
+
+            }
         return this;
     }
 }

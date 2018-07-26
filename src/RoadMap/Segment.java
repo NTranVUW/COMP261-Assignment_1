@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+
+import GUI.ColorFactory;
 import RoadMap.Location;
 
 public class Segment {
@@ -30,10 +32,11 @@ public class Segment {
      public Segment fromNode(Node node){ this.fromNode = node; return this; }
 
      public void draw(Graphics2D g, Location origin, double scale){
+        Color c;
         if (road.isHighlighted()){
-            g.setColor(new Color(48, 51, 107));
-        } else { g.setColor(new Color(186, 220, 88)); }
-
+            c = ColorFactory.getHighlightedSegmentColor();
+        } else { c = ColorFactory.getSegmentColor(); }
+        g.setColor(c);
         for (int i = 0; i < coords.size(); i++){
             Point2D from;
             Point2D to;

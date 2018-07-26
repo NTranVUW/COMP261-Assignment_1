@@ -37,11 +37,9 @@ public class Trie {
         TrieNode node = root;
         for (char c : prefix){
             if (!node.getChildren().containsKey(c)){
-                System.out.println("null");
                 return null;
             }
             node = node.getChildren().get(c);
-            System.out.println("not null");
         }
         getAllFrom(node, results);
         return results;

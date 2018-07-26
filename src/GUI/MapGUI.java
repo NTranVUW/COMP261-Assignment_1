@@ -8,10 +8,10 @@ import RoadMap.Location;
 import RoadMap.Node;
 import RoadMap.Segment;
 import RoadMap.Road;
+import RoadMap.Polygon;
 import Trie.Trie;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,6 +34,28 @@ public class MapGUI extends GUI {
         Double left = Double.POSITIVE_INFINITY;
         Double right = Double.NEGATIVE_INFINITY;
 
+        for (Polygon p : roadMap.getPolygons()) {
+            for (Location loc : p.getCoords()) {
+                if (loc.x < left) {
+                    left = loc.x;
+                } else if (loc.x > right) {
+                    right = loc.x;
+                }
+
+                if (loc.y > top) {
+                    top = loc.y;
+                } else if (loc.y < bottom) {
+                    bottom = loc.y;
+                }
+            }
+        }
+            double heightDiff = top - bottom;
+            double widthDiff = right-left;
+            Dimension window = super.getDrawingAreaDimension();
+            scale = Math.max((window.height/heightDiff), (window.width/widthDiff));
+            origin = new Location(left, top);
+
+        /**
         for (Node n: roadMap.getNodes().values()){
             Location loc = n.getLocation();
             if (loc.x < left){
@@ -53,12 +75,18 @@ public class MapGUI extends GUI {
             scale = Math.max((window.height/heightDiff), (window.width/widthDiff));
             origin = new Location(left, top);
         }
+         */
     }
 
     @Override
     protected void redraw(Graphics g) {
         //System.out.println("Scale: " + scale);
+        if (g == null){
+            return;
+        }
+        //System.out.println(scale);
         drawer.drawTo((Graphics2D) g)
+              .drawPolygons(roadMap.getPolygons(), origin, scale)
               .drawSegments(roadMap.getSegments(), origin, scale)
               .drawNodes(roadMap.getNodes(), origin, scale);
 
@@ -124,7 +152,7 @@ public class MapGUI extends GUI {
          Point draggedPoint = draggedLocation.asPoint(origin, scale);
          int draggedX = draggedPoint.x - pressedPoint.x;
          int draggedY = draggedPoint.y - pressedPoint.y;
-         origin = origin.moveBy(draggedX/100, draggedY/100);
+         origin = origin.moveBy(draggedX*(1/scale), draggedY*(1/scale));
     }
 
     @Override
@@ -208,7 +236,8 @@ public class MapGUI extends GUI {
         Loader loader = new Loader.Builder(this.roadMap)
                                   .nodeFile(nodes)
                                   .roadFile(roads)
-                                  .segmentFile(segments).build().load(trie, quad, origin, scale);
+                                  .segmentFile(segments)
+                                  .polygonFile(polygons).build().load(trie, quad, origin, scale);
         calcScale();
     }
 

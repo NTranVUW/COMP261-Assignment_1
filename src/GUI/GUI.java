@@ -1,13 +1,7 @@
 package GUI;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 
@@ -85,6 +79,11 @@ public abstract class GUI {
      * Move enum is passed, representing the button clicked by the user.
      */
     protected abstract void onMove(Move m);
+
+    /**
+     *
+     */
+    protected abstract void onResize();
 
     /**
      * Is called when the user has successfully selected a directory to load the
@@ -460,6 +459,12 @@ public abstract class GUI {
         // always do these two things last, in this order.
         frame.pack();
         frame.setVisible(true);
+        frame.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                onResize();
+            }
+        });
     }
 }
 

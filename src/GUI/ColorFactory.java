@@ -9,15 +9,14 @@ public class ColorFactory {
     private ColorFactory(){}
 
     public static Color getNodeColor(){
-        return new Color(48, 51, 107);
-    }
+        return new Color(19, 15, 64); }
 
     public static Color getHighlightedNodeColor(){
-        return new Color(19, 15, 64);
+        return new Color(255, 121, 121);
     }
 
     public static Color getSegmentColor(){
-        return new Color(235, 77, 75);
+        return new Color(48, 51, 107);
     }
 
     public static Color getHighlightedSegmentColor(){

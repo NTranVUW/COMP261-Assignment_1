@@ -81,14 +81,14 @@ public class MapGUI extends GUI {
     @Override
     protected void redraw(Graphics g) {
         //System.out.println("Scale: " + scale);
-        if (g == null){
-            return;
+        if (g != null){
+            drawer.drawTo((Graphics2D) g)
+                    .drawPolygons(roadMap.getPolygons(), origin, scale)
+                    .drawSegments(roadMap.getSegments(), origin, scale)
+                    .drawNodes(roadMap.getNodes(), origin, scale);
         }
         //System.out.println(scale);
-        drawer.drawTo((Graphics2D) g)
-              .drawPolygons(roadMap.getPolygons(), origin, scale)
-              .drawSegments(roadMap.getSegments(), origin, scale)
-              .drawNodes(roadMap.getNodes(), origin, scale);
+
 
        // if (quad != null){
          //   drawer.drawQuad(quad, origin, scale);
@@ -227,6 +227,7 @@ public class MapGUI extends GUI {
 
     @Override
     protected void onLoad(File nodes, File roads, File segments, File polygons) throws IOException {
+
         //quad = QuadTree.createFrom(0, 0, getDrawingAreaDimension().width, getDrawingAreaDimension().height);
         //for (int i = 0; i < getDrawingAreaDimension().width; i++){
             //for (int j = 0; j < getDrawingAreaDimension().height; j++){
@@ -238,6 +239,11 @@ public class MapGUI extends GUI {
                                   .roadFile(roads)
                                   .segmentFile(segments)
                                   .polygonFile(polygons).build().load(trie, quad, origin, scale);
+        calcScale();
+    }
+
+    @Override
+    protected void onResize(){
         calcScale();
     }
 

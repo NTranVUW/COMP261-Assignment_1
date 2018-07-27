@@ -1,7 +1,7 @@
-package RoadMap;
+package Data_Structures.Graph;
 
-import GUI.ColorFactory;
-import RoadMap.Location;
+import GUI.Drawing.ColorFactory;
+import GUI.Location;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -21,28 +21,13 @@ public class Node {
 
     public static Node withID(int nodeID){ return new Node(nodeID); }
 
-    public Node atLocation(Location loc){
-        this.location = loc;
-        return this;
-    }
+    public Node atLocation(Location loc){ this.location = loc; return this; }
 
     public int getNodeID(){
         return this.nodeID;
     }
-    public Location getLocation() { return this.location; }
 
-    public void draw(Graphics2D g, Location origin, double scale){
-        Color c;
-        if (highlighted){
-            c = ColorFactory.getHighlightedNodeColor();
-        } else {c = ColorFactory.getNodeColor();}
-        g.setColor(c);
-        Point2D point = location.asPoint2D(origin, scale);
-        double size;
-        if (scale <= 7) {size = scale;} else {size = 7;}
-        Rectangle2D rect = new Rectangle2D.Double(point.getX(), point.getY(), size, size);
-        g.fill(rect);
-    }
+    public Location getLocation() { return this.location; }
 
     public void setHighlighted(boolean highlighted) {
         this.highlighted = highlighted;
@@ -62,5 +47,19 @@ public class Node {
 
     public void addOutSegment(Segment s){
         outSegments.add(s);
+    }
+
+    public void draw(Graphics2D g, Location origin, double scale){
+        Color c;
+        if (highlighted){
+            c = ColorFactory.getHighlightedNodeColor();
+        } else { c = ColorFactory.getNodeColor(); }
+        g.setColor(c);
+
+        Point2D point = location.asPoint2D(origin, scale);
+        double size;
+        if (scale <= 7) {size = scale;} else {size = 7;}
+        Rectangle2D rect = new Rectangle2D.Double(point.getX(), point.getY(), size, size);
+        g.fill(rect);
     }
 }

@@ -1,4 +1,4 @@
-package Trie;
+package Data_Structures.Trie;
 
 import java.util.ArrayList;
 import java.util.List;

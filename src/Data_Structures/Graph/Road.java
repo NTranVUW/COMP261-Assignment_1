@@ -1,9 +1,8 @@
-package RoadMap;
+package Data_Structures.Graph;
 
 import java.util.ArrayList;
 
 public class Road {
-
     public enum RoadClass{
         RESIDENTIAL, COLLECTOR, ARTERIAL, PRINCIPLE_HW, MAJOR_HW
     }

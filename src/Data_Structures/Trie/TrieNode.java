@@ -1,6 +1,4 @@
-package Trie;
-
-import RoadMap.Road;
+package Data_Structures.Trie;
 
 import java.util.ArrayList;
 import java.util.HashMap;

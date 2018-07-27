@@ -1,15 +1,15 @@
 package GUI;
 
-import QuadTree.QuadTree;
-import RoadMap.RoadMap;
-import RoadMap.Loader;
-import RoadMap.Drawer;
-import RoadMap.Location;
-import RoadMap.Node;
-import RoadMap.Segment;
-import RoadMap.Road;
-import RoadMap.Polygon;
-import Trie.Trie;
+import Data_Structures.QuadTree.QuadTree;
+import Data_Structures.Graph.RoadMap;
+import GUI.Parsing.Parser;
+import GUI.Drawing.Drawer;
+import Location;
+import Data_Structures.Graph.Node;
+import Data_Structures.Graph.Segment;
+import Data_Structures.Graph.Road;
+import GUI.Drawing.Polygon;
+import Data_Structures.Trie.Trie;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -227,18 +227,7 @@ public class MapGUI extends GUI {
 
     @Override
     protected void onLoad(File nodes, File roads, File segments, File polygons) throws IOException {
-
-        //quad = QuadTree.createFrom(0, 0, getDrawingAreaDimension().width, getDrawingAreaDimension().height);
-        //for (int i = 0; i < getDrawingAreaDimension().width; i++){
-            //for (int j = 0; j < getDrawingAreaDimension().height; j++){
-                //quad.insert(new Point2D.Double(i,j));
-            //}
-        //}
-        Loader loader = new Loader.Builder(this.roadMap)
-                                  .nodeFile(nodes)
-                                  .roadFile(roads)
-                                  .segmentFile(segments)
-                                  .polygonFile(polygons).build().load(trie, quad, origin, scale);
+        Parser.parse(nodes, roads, segments, polygons, roadMap, trie);
         calcScale();
     }
 

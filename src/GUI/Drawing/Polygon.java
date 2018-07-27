@@ -1,6 +1,6 @@
-package RoadMap;
+package GUI.Drawing;
 
-import GUI.ColorFactory;
+import GUI.Location;
 
 import java.awt.*;
 import java.util.ArrayList;

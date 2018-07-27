@@ -1,10 +1,10 @@
-package RoadMap;
+package GUI;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;
 
 /**
- * A RoadMap.Location is a point in a 2D coordinate system, with increasing x from west
+ * A GUI.Location is a point in a 2D coordinate system, with increasing x from west
  * to east and increasing y from south to north (ordinary mathematical
  * coordinates). Locations are represented with two doubles, (with an
  * unspecified length unit - could be kilometers, for example), and have a fixed
@@ -12,16 +12,16 @@ import java.awt.geom.Point2D;
  *
  * Points, on the other hand, represent pixel positions on the screen. A Point
  * is described by two integers: x pixels across and y pixels down. Note the y
- * coordinate has its direction flipped from RoadMap.Location objects.
+ * coordinate has its direction flipped from GUI.Location objects.
  *
  * Methods are provided to convert between these two coordinate systems, but
- * this conversion requires an origin RoadMap.Location (a RoadMap.Location at the origin will be
+ * this conversion requires an origin GUI.Location (a GUI.Location at the origin will be
  * converted to the point (0,0), which is probably the top-left of the screen),
  * and a scale specifying how many pixels per length unit. Typically the scale
  * will be ( windowSize /(maxLocation - minLocation) ).
  *
  * Finally, a method is provided to convert out of the latitude-longitude
- * coordinate system used in the input files and into the RoadMap.Location coordinate
+ * coordinate system used in the input files and into the GUI.Location coordinate
  * system.
  */
 
@@ -50,7 +50,7 @@ public class Location {
     // -------------------------------------------
 
     /**
-     * Makes a new Point object from this RoadMap.Location object and returns it. To
+     * Makes a new Point object from this GUI.Location object and returns it. To
      * create this Point, an origin location and the scale of the window are
      * required. Note the vertical direction is inverted
      */
@@ -61,7 +61,7 @@ public class Location {
     }
 
     /**
-     * Makes a new Point2D object from this RoadMap.Location object and returns it. To
+     * Makes a new Point2D object from this GUI.Location object and returns it. To
      * create this Point2D, an origin location and the scale of the window are
      * required. Note the vertical direction is inverted
      */
@@ -72,7 +72,7 @@ public class Location {
     }
 
     /**
-     * Create a new RoadMap.Location object from a given Point object, as well as the
+     * Create a new GUI.Location object from a given Point object, as well as the
      * origin and scale. This is effectively the opposite of the asPoint method.
      */
     public static Location newFromPoint(Point point, Location origin, double scale) {
@@ -81,7 +81,7 @@ public class Location {
     }
 
     /**
-     * Create a new RoadMap.Location object from a given Point2D object, as well as the
+     * Create a new GUI.Location object from a given Point2D object, as well as the
      * origin and scale. This is effectively the opposite of the asPoint method.
      */
     public static Location newFromPoint2D(Point2D point, Location origin, double scale) {
@@ -89,7 +89,7 @@ public class Location {
                 / scale);
     }
     /**
-     * Create a new RoadMap.Location object from the given latitude and longitude, which
+     * Create a new GUI.Location object from the given latitude and longitude, which
      * is the format used in the data files.
      */
     public static Location newFromLatLon(double lat, double lon) {
@@ -100,12 +100,12 @@ public class Location {
     }
 
     // ------------------------------------------
-    // some utility methods for RoadMap.Location objects
+    // some utility methods for GUI.Location objects
     // ------------------------------------------
 
     /**
-     * Returns a new RoadMap.Location object that is this RoadMap.Location object moved by the
-     * given dx and dy, ie. this returns a RoadMap.Location representing (x + dx, y +
+     * Returns a new GUI.Location object that is this GUI.Location object moved by the
+     * given dx and dy, ie. this returns a GUI.Location representing (x + dx, y +
      * dy).
      */
     public Location moveBy(double dx, double dy) { return new Location(x + dx, y + dy); }

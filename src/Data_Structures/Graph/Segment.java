@@ -1,12 +1,12 @@
-package RoadMap;
+package Data_Structures.Graph;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
-import GUI.ColorFactory;
-import RoadMap.Location;
+import GUI.Drawing.ColorFactory;
+import GUI.Location;
 
 public class Segment {
     private Road road;
@@ -31,18 +31,25 @@ public class Segment {
 
      public Segment fromNode(Node node){ this.fromNode = node; return this; }
 
-     public void draw(Graphics2D g, Location origin, double scale){
+     public Road getRoad() {
+        return road;
+    }
+
+    public void draw(Graphics2D g, Location origin, double scale){
         Color c;
         if (road.isHighlighted()){
             c = ColorFactory.getHighlightedSegmentColor();
         } else { c = ColorFactory.getSegmentColor(); }
         g.setColor(c);
+
         for (int i = 0; i < coords.size(); i++){
             Point2D from;
             Point2D to;
+            //if first iteration draw from this coordinate to next coordinate
             if (i == 0){
                 from = coords.get(i).asPoint2D(origin, scale);
                 to = coords.get(i+1).asPoint2D(origin, scale);
+            //if not first segment draw from previous coordinate to this coordinate
             } else {
                 from = coords.get(i-1).asPoint2D(origin, scale);
                 to = coords.get(i).asPoint2D(origin, scale);
@@ -50,9 +57,5 @@ public class Segment {
             Line2D line = new Line2D.Double(from.getX(), from.getY(), to.getX(), to.getY());
             g.draw(line);
         }
-     }
-
-    public Road getRoad() {
-        return road;
     }
 }

@@ -1,7 +1,9 @@
-package RoadMap;
+package GUI.Drawing;
 
-import RoadMap.Node;
-import QuadTree.QuadTree;
+import GUI.Location;
+import Data_Structures.QuadTree.QuadTree;
+import Data_Structures.Graph.Node;
+import Data_Structures.Graph.Segment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +45,7 @@ public class Drawer {
         return this;
     }
 
-    public Drawer drawPolygons(ArrayList<Polygon> polygons, Location origin, double scale){
+    public Drawer drawPolygons(ArrayList<GUI.Drawing.Polygon> polygons, Location origin, double scale){
         for (Polygon p : polygons){
             int endLevel = p.getEndLevel();
             boolean draw = false;

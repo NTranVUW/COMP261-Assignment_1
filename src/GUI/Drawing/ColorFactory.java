@@ -1,6 +1,4 @@
-package GUI;
-
-import RoadMap.Polygon;
+package GUI.Drawing;
 
 import java.awt.*;
 
@@ -9,18 +7,18 @@ public class ColorFactory {
     private ColorFactory(){}
 
     public static Color getNodeColor(){
-        return new Color(19, 15, 64); }
+        return new Color(48, 51, 107); }
 
     public static Color getHighlightedNodeColor(){
-        return new Color(255, 121, 121);
+        return new Color(190, 46, 221);
     }
 
     public static Color getSegmentColor(){
-        return new Color(48, 51, 107);
+        return new Color(249, 202, 36);
     }
 
     public static Color getHighlightedSegmentColor(){
-        return new Color(255, 190, 118);
+        return new Color(255, 121, 121);
     }
 
     public static Color getPolygonColor(Polygon.PolyType type){
@@ -28,8 +26,8 @@ public class ColorFactory {
         Color lightGreen = new Color(186, 220, 88);
         Color darkGreen = new Color(106, 176, 76);
         Color lightYellow = new Color(246, 229, 141);
-        Color lightGrey = new Color(149, 175, 192);
-        Color darkGrey = new Color(83, 92, 104);
+        Color lightGrey = new Color(199, 236, 238);
+        Color darkGrey = new Color(149, 175, 192);
 
 
         switch(type){
@@ -60,7 +58,7 @@ public class ColorFactory {
             case SHOPPING_CENTRE:
                 return lightYellow;
             case MAN_MADE_AREA:
-                return lightGrey;
+                return lightYellow;
             case AIRPORT_RUNWAY:
                 return lightGrey;
             case CEMETERY:

@@ -1,13 +1,11 @@
-package QuadTree;
+package Data_Structures.QuadTree;
 
-import RoadMap.Location;
-import RoadMap.Node;
+import GUI.Location;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class QuadTree {
 

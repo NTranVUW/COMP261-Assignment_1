@@ -4,7 +4,7 @@ import Data_Structures.QuadTree.QuadTree;
 import Data_Structures.Graph.RoadMap;
 import GUI.Parsing.Parser;
 import GUI.Drawing.Drawer;
-import Location;
+import GUI.Location;
 import Data_Structures.Graph.Node;
 import Data_Structures.Graph.Segment;
 import Data_Structures.Graph.Road;
@@ -21,11 +21,11 @@ public class MapGUI extends GUI {
     private final RoadMap roadMap = RoadMap.newInstance();
     private final Drawer drawer = Drawer.create();
     private final Trie trie = Trie.create();
+
     private Location origin = Location.newFromLatLon(0,0);
     private double scale;
     private Node highlightedNode;
     private ArrayList<Road> highlightedRoads;
-    private QuadTree quad;
     private Location pressedLocation;
 
     protected void calcScale(){
@@ -35,12 +35,13 @@ public class MapGUI extends GUI {
         Double right = Double.NEGATIVE_INFINITY;
 
         for (Polygon p : roadMap.getPolygons()) {
-            for (Location loc : p.getCoords()) {
-                if (loc.x < left) {
-                    left = loc.x;
-                } else if (loc.x > right) {
-                    right = loc.x;
-                }
+            for (ArrayList<Location> arr : p.getCoords()) {
+                for (Location loc: arr){
+                    if (loc.x < left) {
+                        left = loc.x;
+                    } else if (loc.x > right) {
+                        right = loc.x;
+                    }
 
                 if (loc.y > top) {
                     top = loc.y;
@@ -48,6 +49,7 @@ public class MapGUI extends GUI {
                     bottom = loc.y;
                 }
             }
+        }
         }
             double heightDiff = top - bottom;
             double widthDiff = right-left;
@@ -81,7 +83,7 @@ public class MapGUI extends GUI {
     @Override
     protected void redraw(Graphics g) {
         //System.out.println("Scale: " + scale);
-        if (g != null){
+        if (g != null && drawer != null){
             drawer.drawTo((Graphics2D) g)
                     .drawPolygons(roadMap.getPolygons(), origin, scale)
                     .drawSegments(roadMap.getSegments(), origin, scale)

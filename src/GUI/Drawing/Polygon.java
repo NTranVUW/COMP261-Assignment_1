@@ -17,10 +17,10 @@ public class Polygon {
    private String name;
    private int endLevel;
    private int cityIdx;
-   private ArrayList<Location> coords;
+   private ArrayList<ArrayList<Location>> coords;
 
     private Polygon(){
-        coords = new ArrayList<Location>();
+        coords = new ArrayList<>();
     }
 
     public static Polygon create(){
@@ -29,7 +29,7 @@ public class Polygon {
 
     public Polygon ofType(String type){ this.type = type; assignType(); return this; }
 
-    public Polygon addCoord(Location l){
+    public Polygon addCoords(ArrayList<Location> l){
         coords.add(l);
         return this;
     }
@@ -133,7 +133,7 @@ public class Polygon {
         }
     }
 
-    public ArrayList<Location> getCoords() {
+    public ArrayList<ArrayList<Location>> getCoords() {
         return coords;
     }
 
@@ -146,15 +146,17 @@ public class Polygon {
     public void draw(Graphics2D g, Location origin, double scale){
         Color c = ColorFactory.getPolygonColor(polyType);
         g.setColor(c);
-        int[] xCoords = new int[coords.size()];
-        int[] yCoords = new int[coords.size()];
-        int i =0;
-        for (i = 0; i < coords.size(); i++){
-            Point p = coords.get(i).asPoint(origin, scale);
-            xCoords[i] = (int) p.getX();
-            yCoords[i] = (int) p.getY();
+        for (ArrayList<Location> a : coords){
+            int[] xCoords = new int[a.size()];
+            int[] yCoords = new int[a.size()];
+            int i =0;
+            for (i = 0; i < a.size(); i++){
+                Point p = a.get(i).asPoint(origin, scale);
+                xCoords[i] = (int) p.getX();
+                yCoords[i] = (int) p.getY();
+            }
+            java.awt.Polygon p = new java.awt.Polygon(xCoords, yCoords, i);
+            g.fill(p);
         }
-        java.awt.Polygon p = new java.awt.Polygon(xCoords, yCoords, i);
-        g.fill(p);
     }
 }

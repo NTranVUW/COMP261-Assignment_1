@@ -9,10 +9,10 @@ import java.util.HashSet;
 
 public class RoadMap {
 
-    private HashMap<Integer, Node> nodes = new HashMap();
-    private HashMap<Integer, Road> roads = new HashMap();
-    private HashSet<Segment> segments = new HashSet<Segment>();
-    private ArrayList<Polygon> polygons = new ArrayList<Polygon>();
+    private HashMap<Integer, Node> nodes = new HashMap<>();
+    private HashMap<Integer, Road> roads = new HashMap<>();
+    private HashSet<Segment> segments = new HashSet<>();
+    private ArrayList<Polygon> polygons = new ArrayList<>();
 
     @NotNull
     public static RoadMap newInstance(){
@@ -38,4 +38,9 @@ public class RoadMap {
     public HashSet<Segment> getSegments() { return this.segments; }
 
     public ArrayList<Polygon> getPolygons() { return this.polygons; }
+
+
+
+    public void reset() { nodes = new HashMap<>(); roads = new HashMap<>();
+                          segments = new HashSet<>(); polygons = new ArrayList<>(); }
 }

@@ -23,9 +23,7 @@ public class Node {
 
     public Node atLocation(Location loc){ this.location = loc; return this; }
 
-    public int getNodeID(){
-        return this.nodeID;
-    }
+    public int getNodeID(){ System.out.println(""); return this.nodeID; }
 
     public Location getLocation() { return this.location; }
 

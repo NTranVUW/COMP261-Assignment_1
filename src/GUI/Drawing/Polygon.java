@@ -5,7 +5,7 @@ import GUI.Location;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class Polygon {
+public class Polygon implements Drawable {
    public enum PolyType{
        LAKE, OCEAN, RIVER, BLUE_UNKNOWN, STATE_PARK, SPORT, GOLF, CITY_PARK, WOODS, NATIONAL_PARK,
        UNIVERSITY, HOSPITAL, SHOPPING_CENTRE, MAN_MADE_AREA, AIRPORT_RUNWAY, CEMETERY, CITY,
@@ -141,20 +141,21 @@ public class Polygon {
         return polyType;
     }
 
-    //public String
-
     public void draw(Graphics2D g, Location origin, double scale){
         Color c = ColorFactory.getPolygonColor(polyType);
         g.setColor(c);
+        //some polygons have multiple data0 or data1 lines
+        //draw a polygon for each data0/data1 line
         for (ArrayList<Location> a : coords){
             int[] xCoords = new int[a.size()];
             int[] yCoords = new int[a.size()];
-            int i =0;
+            int i;
             for (i = 0; i < a.size(); i++){
                 Point p = a.get(i).asPoint(origin, scale);
                 xCoords[i] = (int) p.getX();
                 yCoords[i] = (int) p.getY();
             }
+            //i is the number of points (coordinates) this polygon has
             java.awt.Polygon p = new java.awt.Polygon(xCoords, yCoords, i);
             g.fill(p);
         }

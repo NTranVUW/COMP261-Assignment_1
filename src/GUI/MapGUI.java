@@ -1,41 +1,43 @@
 package GUI;
 
-import Data_Structures.QuadTree.QuadTree;
-import Data_Structures.Graph.RoadMap;
-import GUI.Parsing.Parser;
-import GUI.Drawing.Drawer;
-import GUI.Location;
 import Data_Structures.Graph.Node;
-import Data_Structures.Graph.Segment;
 import Data_Structures.Graph.Road;
-import GUI.Drawing.Polygon;
+import Data_Structures.Graph.RoadMap;
+import Data_Structures.Graph.Segment;
 import Data_Structures.Trie.Trie;
+
+import GUI.Drawing.MapDrawer;
+import GUI.Drawing.Polygon;
+import GUI.Parsing.Parser;
+
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MapGUI extends GUI {
+    private static final double ZOOM_FACTOR = 1.5;
+
     private final RoadMap roadMap = RoadMap.newInstance();
-    private final Drawer drawer = Drawer.create();
+    private final MapDrawer mapDrawer = MapDrawer.create();
     private final Trie trie = Trie.create();
 
-    private Location origin = Location.newFromLatLon(0,0);
-    private double scale;
     private Node highlightedNode;
     private ArrayList<Road> highlightedRoads;
     private Location pressedLocation;
+    private Location origin;
+    private double scale;
 
-    protected void calcScale(){
-        Double top = Double.NEGATIVE_INFINITY;
-        Double bottom = Double.POSITIVE_INFINITY;
-        Double left = Double.POSITIVE_INFINITY;
-        Double right = Double.NEGATIVE_INFINITY;
+    private double top = Double.POSITIVE_INFINITY;
+    private double bottom = Double.NEGATIVE_INFINITY;
+    private double left = Double.POSITIVE_INFINITY;
+    private double right = Double.NEGATIVE_INFINITY;
 
-        for (Polygon p : roadMap.getPolygons()) {
-            for (ArrayList<Location> arr : p.getCoords()) {
+    private void calculateMapSize(){
+        //calculates the highest, lowest y and x points from the polygons, this is the window
+        for (Polygon poly : roadMap.getPolygons()) {
+            for (ArrayList<Location> arr : poly.getCoords()) {
                 for (Location loc: arr){
                     if (loc.x < left) {
                         left = loc.x;
@@ -43,58 +45,34 @@ public class MapGUI extends GUI {
                         right = loc.x;
                     }
 
-                if (loc.y > top) {
-                    top = loc.y;
-                } else if (loc.y < bottom) {
-                    bottom = loc.y;
+                    if (loc.y > bottom) {
+                        bottom = loc.y;
+                    } else if (loc.y < top) {
+                        top = loc.y;
+                    }
                 }
             }
         }
-        }
-            double heightDiff = top - bottom;
-            double widthDiff = right-left;
-            Dimension window = super.getDrawingAreaDimension();
-            scale = Math.max((window.height/heightDiff), (window.width/widthDiff));
-            origin = new Location(left, top);
+    }
 
-        /**
-        for (Node n: roadMap.getNodes().values()){
-            Location loc = n.getLocation();
-            if (loc.x < left){
-                left = loc.x;
-            } else if (loc.x > right){
-                right =loc.x;
-            }
-
-            if (loc.y > top){
-                top = loc.y;
-            } else if (loc.y < bottom){
-                bottom = loc.y;
-            }
-            double heightDiff = top - bottom;
-            double widthDiff = right-left;
-            Dimension window = super.getDrawingAreaDimension();
-            scale = Math.max((window.height/heightDiff), (window.width/widthDiff));
-            origin = new Location(left, top);
-        }
-         */
+    private void calcScale(){
+        calculateMapSize();
+        double heightDiff = bottom - top;
+        double widthDiff = right - left;
+        Dimension window = super.getDrawingAreaDimension();
+        //(windowSize/(maxLocation - minLocation))
+        scale = Math.max((window.height/heightDiff), (window.width/widthDiff));
+        origin = new Location(left, bottom); //draws the toppest, leftist point at 0,0
     }
 
     @Override
     protected void redraw(Graphics g) {
-        //System.out.println("Scale: " + scale);
-        if (g != null && drawer != null){
-            drawer.drawTo((Graphics2D) g)
-                    .drawPolygons(roadMap.getPolygons(), origin, scale)
-                    .drawSegments(roadMap.getSegments(), origin, scale)
-                    .drawNodes(roadMap.getNodes(), origin, scale);
+        if (g != null){
+            mapDrawer.drawTo((Graphics2D) g)
+                     .drawPolygons(roadMap.getPolygons(), origin, scale)
+                     .drawSegments(roadMap.getSegments(), origin, scale)
+                     .drawNodes(roadMap.getNodes(), origin, scale);
         }
-        //System.out.println(scale);
-
-
-       // if (quad != null){
-         //   drawer.drawQuad(quad, origin, scale);
-       // }
     }
 
     @Override
@@ -138,6 +116,7 @@ public class MapGUI extends GUI {
                 else { getTextOutputArea().append(roadNames.get(i)); }
             }
         }
+
 
 
     }
@@ -216,11 +195,11 @@ public class MapGUI extends GUI {
                 origin = origin.moveBy(-100*(1/scale), 0);
                 break;
             case ZOOM_IN:
-                scale = scale+(scale/5);
-                //origin = Location.newFromPoint(MouseInfo.getPointerInfo().getLocation(), origin, scale);
+                scale = scale*ZOOM_FACTOR;
+                //origin =
                 break;
             case ZOOM_OUT:
-                scale = scale-(scale/5);
+                scale = scale/ZOOM_FACTOR;
                 //origin = Location.newFromPoint(MouseInfo.getPointerInfo().getLocation(), origin, scale);
                 break;
         }
@@ -228,9 +207,9 @@ public class MapGUI extends GUI {
     }
 
     @Override
-    protected void onLoad(File nodes, File roads, File segments, File polygons) throws IOException {
+    protected void onLoad(File nodes, File roads, File segments, File polygons) {
         Parser.parse(nodes, roads, segments, polygons, roadMap, trie);
-        calcScale();
+        calcScale(); //calculates the initial scale and origin
     }
 
     @Override

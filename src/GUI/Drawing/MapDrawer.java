@@ -11,43 +11,44 @@ import java.util.HashSet;
 import java.util.Map;
 import java.awt.*;
 
-public class Drawer {
+public class MapDrawer {
 
     private Graphics2D g;
 
-    private Drawer(){}
+    private MapDrawer(){}
 
-    public static Drawer create(){
-        return new Drawer();
+    public static MapDrawer create(){
+        return new MapDrawer();
     }
 
-    public Drawer drawTo(Graphics2D g){
+    public MapDrawer drawTo(Graphics2D g){
         this.g = g;
         return this;
     }
 
-    public Drawer drawNodes(HashMap<Integer, Node> nodes, Location origin, double scale){
+    public MapDrawer drawNodes(HashMap<Integer, Node> nodes, Location origin, double scale){
         for (Map.Entry m : nodes.entrySet()){
             Node node = (Node) m.getValue();
             node.draw(g, origin, scale);
         }
         return this;
     }
-    public Drawer drawSegments(HashSet<Segment> segments, Location origin, double scale){
+    public MapDrawer drawSegments(HashSet<Segment> segments, Location origin, double scale){
         for (Segment s : segments){
             s.draw(g, origin, scale);
         }
         return this;
     }
 
-    public Drawer drawQuad(QuadTree quad, Location origin, double scale){
+    public MapDrawer drawQuad(QuadTree quad, Location origin, double scale){
         quad.draw(g, origin, scale);
         return this;
     }
 
-    public Drawer drawPolygons(ArrayList<GUI.Drawing.Polygon> polygons, Location origin, double scale){
+    public MapDrawer drawPolygons(ArrayList<GUI.Drawing.Polygon> polygons, Location origin, double scale){
         for (Polygon p : polygons){
             int endLevel = p.getEndLevel();
+            //uses a boolean to determine whether or not the polygon gets drawn based on its end level
             boolean draw = false;
             switch(endLevel){
                 case 2:
@@ -63,12 +64,9 @@ public class Drawer {
                         draw = true;
                     }
             }
-
                 if (draw){
                     p.draw(g, origin, scale);
                 }
-
-
             }
         return this;
     }

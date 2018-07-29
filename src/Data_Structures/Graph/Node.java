@@ -1,6 +1,7 @@
 package Data_Structures.Graph;
 
 import GUI.Drawing.ColorFactory;
+import GUI.Drawing.Drawable;
 import GUI.Location;
 
 import java.awt.*;
@@ -8,7 +9,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
-public class Node {
+public class Node implements Drawable {
     private final int nodeID;
     private final ArrayList<Segment> inSegments = new ArrayList<Segment>();
     private final ArrayList<Segment> outSegments = new ArrayList<Segment>();
@@ -56,6 +57,7 @@ public class Node {
 
         Point2D point = location.asPoint2D(origin, scale);
         double size;
+        //only increase the node size up to a certain point so they don't get too big
         if (scale <= 7) {size = scale;} else {size = 7;}
         Rectangle2D rect = new Rectangle2D.Double(point.getX(), point.getY(), size, size);
         g.fill(rect);

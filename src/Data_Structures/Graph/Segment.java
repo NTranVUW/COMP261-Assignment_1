@@ -6,9 +6,10 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 import GUI.Drawing.ColorFactory;
+import GUI.Drawing.Drawable;
 import GUI.Location;
 
-public class Segment {
+public class Segment implements Drawable {
     private Road road;
     private Node toNode;
     private Node fromNode;
@@ -49,7 +50,7 @@ public class Segment {
             if (i == 0){
                 from = coords.get(i).asPoint2D(origin, scale);
                 to = coords.get(i+1).asPoint2D(origin, scale);
-            //if not first segment draw from previous coordinate to this coordinate
+            //if not first iteration draw from previous coordinate to this coordinate
             } else {
                 from = coords.get(i-1).asPoint2D(origin, scale);
                 to = coords.get(i).asPoint2D(origin, scale);

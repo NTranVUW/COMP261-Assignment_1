@@ -17,10 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MapGUI extends GUI {
-    private static final double ZOOM_FACTOR = 1.5;
+    private static final double ZOOM_FACTOR = 1.25;
 
     private final RoadMap roadMap = RoadMap.newInstance();
-    private final MapDrawer mapDrawer = MapDrawer.create();
+    private final MapDrawer mapDrawer = MapDrawer.create(this);
     private final Trie trie = Trie.create();
 
     private Node highlightedNode;
@@ -77,6 +77,7 @@ public class MapGUI extends GUI {
 
     @Override
     protected void onClick(MouseEvent e) {
+        /**
         int clickX = e.getX();
         int clickY = e.getY();
         Location clickLocation = Location.newFromPoint(new Point(clickX, clickY), origin, scale);
@@ -116,9 +117,7 @@ public class MapGUI extends GUI {
                 else { getTextOutputArea().append(roadNames.get(i)); }
             }
         }
-
-
-
+         */
     }
 
     @Override
@@ -181,6 +180,7 @@ public class MapGUI extends GUI {
 
     @Override
     protected void onMove(GUI.Move m) {
+
         switch (m) {
             case NORTH:
                 origin = origin.moveBy(0, 100*(1/scale));
@@ -203,7 +203,6 @@ public class MapGUI extends GUI {
                 //origin = Location.newFromPoint(MouseInfo.getPointerInfo().getLocation(), origin, scale);
                 break;
         }
-
     }
 
     @Override

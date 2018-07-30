@@ -4,6 +4,7 @@ import GUI.Location;
 import Data_Structures.QuadTree.QuadTree;
 import Data_Structures.Graph.Node;
 import Data_Structures.Graph.Segment;
+import GUI.GUI;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,12 +15,11 @@ import java.awt.*;
 public class MapDrawer {
 
     private Graphics2D g;
+    private GUI gui;
 
-    private MapDrawer(){}
+    private MapDrawer(GUI gui){ this.gui = gui; }
 
-    public static MapDrawer create(){
-        return new MapDrawer();
-    }
+    public static MapDrawer create(GUI gui){ return new MapDrawer(gui); }
 
     public MapDrawer drawTo(Graphics2D g){
         this.g = g;
@@ -29,13 +29,13 @@ public class MapDrawer {
     public MapDrawer drawNodes(HashMap<Integer, Node> nodes, Location origin, double scale){
         for (Map.Entry m : nodes.entrySet()){
             Node node = (Node) m.getValue();
-            node.draw(g, origin, scale);
+            node.draw(g, origin, scale, gui);
         }
         return this;
     }
     public MapDrawer drawSegments(HashSet<Segment> segments, Location origin, double scale){
         for (Segment s : segments){
-            s.draw(g, origin, scale);
+            s.draw(g, origin, scale, gui);
         }
         return this;
     }
@@ -45,7 +45,7 @@ public class MapDrawer {
         return this;
     }
 
-    public MapDrawer drawPolygons(ArrayList<GUI.Drawing.Polygon> polygons, Location origin, double scale){
+    public MapDrawer drawPolygons(ArrayList<Polygon> polygons, Location origin, double scale){
         for (Polygon p : polygons){
             int endLevel = p.getEndLevel();
             //uses a boolean to determine whether or not the polygon gets drawn based on its end level
@@ -65,7 +65,7 @@ public class MapDrawer {
                     }
             }
                 if (draw){
-                    p.draw(g, origin, scale);
+                    p.draw(g, origin, scale, gui);
                 }
             }
         return this;

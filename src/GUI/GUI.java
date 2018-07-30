@@ -2,6 +2,7 @@ package GUI;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 
@@ -135,6 +136,12 @@ public abstract class GUI {
     public void redraw() {
         frame.repaint();
     }
+
+    public Rectangle2D getBounds() { return getBounds(); }
+
+    public double getWindowWidth() { return getDrawingAreaDimension().width; }
+
+    public double getWindowHeight() { return getDrawingAreaDimension().height; }
 
     // --------------------------------------------------------------------
     // Everything below here is Swing-related and, while it's worth

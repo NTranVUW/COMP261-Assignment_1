@@ -10,21 +10,17 @@ import java.util.ArrayList;
 public class QuadTree {
 
     private Rectangle2D boundary;
-    private final int capacity = 1;
+    private final int capacity = 4;
 
     private QuadTree northWest;
     private QuadTree southWest;
     private QuadTree southEast;
     private QuadTree northEast;
 
-    //private final HashMap<Point2D, Node> points = new HashMap<>();
     private final ArrayList<Point2D> points = new ArrayList<>();
-    private int count;
-
 
     private QuadTree(double x, double y, double width, double height){
         this.boundary = new Rectangle2D.Double(x, y, width, height);
-        this.count = 0;
     }
 
     public static QuadTree createFrom(double x, double y, double width, double height){
@@ -33,16 +29,13 @@ public class QuadTree {
 
     public boolean insert(Point2D p){
         if (!boundary.contains(p)){
-            System.out.println("false");
             return false;
         }
         if (points.size() < capacity){
-            //points.put(p, n);
             points.add(p);
-            //count++;
             return true;
         }
-        if (northWest == null){ System.out.println("divide"); subdivide(); }
+        if (northWest == null){ subdivide(); }
 
         if (northWest.insert(p)){ return true; }
         if (southWest.insert(p)){ return true; }

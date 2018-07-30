@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import GUI.Drawing.ColorFactory;
 import GUI.Drawing.Drawable;
 import GUI.Location;
+import GUI.GUI;
 
 public class Segment implements Drawable {
     private Road road;
@@ -36,7 +37,7 @@ public class Segment implements Drawable {
         return road;
     }
 
-    public void draw(Graphics2D g, Location origin, double scale){
+    public void draw(Graphics2D g, Location origin, double scale, GUI gui){
         Color c;
         if (road.isHighlighted()){
             c = ColorFactory.getHighlightedSegmentColor();
@@ -54,6 +55,13 @@ public class Segment implements Drawable {
             } else {
                 from = coords.get(i-1).asPoint2D(origin, scale);
                 to = coords.get(i).asPoint2D(origin, scale);
+            }
+            //if segments are outside view then don't draw the segments
+            if ((from.getX() <= 0 || from.getX() >= gui.getWindowWidth())
+                    && (to.getX() <= 0 || to.getX() >= gui.getWindowWidth())
+                    && (from.getY() <= 0 || from.getY() >= gui.getWindowHeight())
+                    && (to.getY() <= 0 || to.getY() >= gui.getWindowHeight())){
+                return;
             }
             Line2D line = new Line2D.Double(from.getX(), from.getY(), to.getX(), to.getY());
             g.draw(line);

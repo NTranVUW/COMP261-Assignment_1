@@ -3,6 +3,7 @@ package Data_Structures.Graph;
 import GUI.Drawing.ColorFactory;
 import GUI.Drawing.Drawable;
 import GUI.Location;
+import GUI.GUI;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -48,7 +49,7 @@ public class Node implements Drawable {
         outSegments.add(s);
     }
 
-    public void draw(Graphics2D g, Location origin, double scale){
+    public void draw(Graphics2D g, Location origin, double scale, GUI gui){
         Color c;
         if (highlighted){
             c = ColorFactory.getHighlightedNodeColor();
@@ -59,7 +60,12 @@ public class Node implements Drawable {
         double size;
         //only increase the node size up to a certain point so they don't get too big
         if (scale <= 7) {size = scale;} else {size = 7;}
-        Rectangle2D rect = new Rectangle2D.Double(point.getX(), point.getY(), size, size);
+        //if node is outside view then don't draw this node
+        if ((point.getX() <= 0 || point.getX() >= gui.getWindowWidth())
+                && (point.getY() <= 0 || point.getY() >= gui.getWindowHeight())){
+            return;
+        }
+        Rectangle2D rect = new Rectangle2D.Double(point.getX()+(size/2), point.getY()+(size/2), size, size);
         g.fill(rect);
     }
 }

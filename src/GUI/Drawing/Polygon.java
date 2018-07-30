@@ -1,9 +1,11 @@
 package GUI.Drawing;
 
 import GUI.Location;
+import GUI.GUI;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class Polygon implements Drawable {
    public enum PolyType{
@@ -141,7 +143,7 @@ public class Polygon implements Drawable {
         return polyType;
     }
 
-    public void draw(Graphics2D g, Location origin, double scale){
+    public void draw(Graphics2D g, Location origin, double scale, GUI gui){
         Color c = ColorFactory.getPolygonColor(polyType);
         g.setColor(c);
         //some polygons have multiple data0 or data1 lines

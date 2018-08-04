@@ -12,6 +12,7 @@ import GUI.Parsing.Parser;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,27 +29,57 @@ public class MapGUI extends GUI {
     private Location pressedLocation;
     private Location origin;
     private double scale;
+    private long timeStart;
+    private long timeEnd;
 
-    private double top = Double.POSITIVE_INFINITY;
-    private double bottom = Double.NEGATIVE_INFINITY;
-    private double left = Double.POSITIVE_INFINITY;
-    private double right = Double.NEGATIVE_INFINITY;
+    //in relative coordinates
+    private double maxTop = Double.NEGATIVE_INFINITY;
+    private double maxBottom = Double.POSITIVE_INFINITY;
+    private double maxLeft = Double.POSITIVE_INFINITY;
+    private double maxRight = Double.NEGATIVE_INFINITY;
+    //in pixel points
+    private double currentTop = Double.POSITIVE_INFINITY;
+    private double currentBottom = Double.NEGATIVE_INFINITY;
+    private double currentLeft = Double.POSITIVE_INFINITY;
+    private double currentRight = Double.NEGATIVE_INFINITY;
 
     private void calculateMapSize(){
         //calculates the highest, lowest y and x points from the polygons, this is the window
         for (Polygon poly : roadMap.getPolygons()) {
             for (ArrayList<Location> arr : poly.getCoords()) {
                 for (Location loc: arr){
-                    if (loc.x < left) {
-                        left = loc.x;
-                    } else if (loc.x > right) {
-                        right = loc.x;
+                    if (loc.x < maxLeft) {
+                        maxLeft = loc.x;
+                    } else if (loc.x > maxRight) {
+                        maxRight = loc.x;
                     }
 
-                    if (loc.y > bottom) {
-                        bottom = loc.y;
-                    } else if (loc.y < top) {
-                        top = loc.y;
+                    if (loc.y > maxTop) {
+                        maxTop = loc.y;
+                    } else if (loc.y < maxBottom) {
+                        maxBottom = loc.y;
+                    }
+                }
+            }
+        }
+    }
+
+    private void calculateCurrentMapSize(){
+        //calculates the highest, lowest y and x points from the polygons, this is the window
+        for (Polygon poly : roadMap.getPolygons()) {
+            for (ArrayList<Location> arr : poly.getCoords()) {
+                for (Location loc: arr){
+                    Point2D point = loc.asPoint2D(origin, scale);
+                    if (point.getX() < currentLeft && !(point.getX() > getWindowWidth())) {
+                        currentLeft = point.getX();
+                    } else if (point.getX() > currentRight && !(point.getX() < 0)) {
+                        currentRight = point.getX();
+                    }
+
+                    if (point.getY() > currentBottom && !(point.getY() > getWindowHeight())) {
+                        currentBottom = point.getY();
+                    } else if (point.getY() < currentTop && !(point.getY() < 0)) {
+                        currentTop = point.getY();
                     }
                 }
             }
@@ -57,17 +88,19 @@ public class MapGUI extends GUI {
 
     private void calcScale(){
         calculateMapSize();
-        double heightDiff = bottom - top;
-        double widthDiff = right - left;
+        double heightDiff = maxTop - maxBottom;
+        double widthDiff = maxRight - maxLeft;
         Dimension window = super.getDrawingAreaDimension();
         //(windowSize/(maxLocation - minLocation))
         scale = Math.max((window.height/heightDiff), (window.width/widthDiff));
-        origin = new Location(left, bottom); //draws the toppest, leftist point at 0,0
+        origin = new Location(maxLeft, maxTop); //draws the toppest, leftist point at 0,0
     }
 
     @Override
     protected void redraw(Graphics g) {
         if (g != null){
+            timeEnd = System.currentTimeMillis();
+            //System.out.println("time: " + (timeEnd - timeStart));
             mapDrawer.drawTo((Graphics2D) g)
                      .drawPolygons(roadMap.getPolygons(), origin, scale)
                      .drawSegments(roadMap.getSegments(), origin, scale)
@@ -77,7 +110,6 @@ public class MapGUI extends GUI {
 
     @Override
     protected void onClick(MouseEvent e) {
-        /**
         int clickX = e.getX();
         int clickY = e.getY();
         Location clickLocation = Location.newFromPoint(new Point(clickX, clickY), origin, scale);
@@ -97,27 +129,27 @@ public class MapGUI extends GUI {
             closestNode.setHighlighted(true);
             highlightedNode = closestNode;
             ArrayList<String> roadNames = new ArrayList<String>();
-            for (Segment s : closestNode.getInSegments()){
+            for (Segment s : closestNode.getInSegments()) {
                 String name = s.getRoad().getName();
-                if (!roadNames.contains(name)){
+                if (!roadNames.contains(name)) {
                     roadNames.add(name);
                 }
             }
-            for (Segment s : closestNode.getOutSegments()){
+            for (Segment s : closestNode.getOutSegments()) {
                 String name = s.getRoad().getName();
-                if (!roadNames.contains(name)){
+                if (!roadNames.contains(name)) {
                     roadNames.add(name);
                 }
             }
             getTextOutputArea().setText("Node ID: " + closestNode.getNodeID() + " connecting roads: ");
-            for (int i = 0; i < roadNames.size(); i++){
-                if (i != roadNames.size() - 1){
+            for (int i = 0; i < roadNames.size(); i++) {
+                if (i != roadNames.size() - 1) {
                     getTextOutputArea().append(roadNames.get(i) + " and ");
+                } else {
+                    getTextOutputArea().append(roadNames.get(i));
                 }
-                else { getTextOutputArea().append(roadNames.get(i)); }
             }
         }
-         */
     }
 
     @Override
@@ -132,7 +164,8 @@ public class MapGUI extends GUI {
          Point draggedPoint = draggedLocation.asPoint(origin, scale);
          int draggedX = draggedPoint.x - pressedPoint.x;
          int draggedY = draggedPoint.y - pressedPoint.y;
-         origin = origin.moveBy(draggedX*(1/scale), draggedY*(1/scale));
+         //lmfao I don't even know how this works but it does
+         origin = origin.moveBy(-(draggedX/(25*scale*0.1)), draggedY/(25*scale*0.1));
     }
 
     @Override
@@ -196,7 +229,12 @@ public class MapGUI extends GUI {
                 break;
             case ZOOM_IN:
                 scale = scale*ZOOM_FACTOR;
-                //origin =
+                calculateCurrentMapSize();
+                double currentWidth = currentRight - currentLeft;
+                double currentHeight = currentBottom - currentTop;
+                double moveByX = (currentWidth - (currentWidth/ZOOM_FACTOR))/2;
+                double moveByY = (currentHeight - (currentHeight/ZOOM_FACTOR))/2;
+                //origin = origin.moveBy(moveByX, moveByY);
                 break;
             case ZOOM_OUT:
                 scale = scale/ZOOM_FACTOR;
@@ -207,6 +245,7 @@ public class MapGUI extends GUI {
 
     @Override
     protected void onLoad(File nodes, File roads, File segments, File polygons) {
+        timeStart = System.currentTimeMillis();
         Parser.parse(nodes, roads, segments, polygons, roadMap, trie);
         calcScale(); //calculates the initial scale and origin
     }

@@ -22,6 +22,9 @@ public class MapDrawer {
     public static MapDrawer create(GUI gui){ return new MapDrawer(gui); }
 
     public MapDrawer drawTo(Graphics2D g){
+        g.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
         this.g = g;
         return this;
     }

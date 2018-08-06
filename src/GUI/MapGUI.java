@@ -4,6 +4,7 @@ import Data_Structures.Graph.Node;
 import Data_Structures.Graph.Road;
 import Data_Structures.Graph.RoadMap;
 import Data_Structures.Graph.Segment;
+import Data_Structures.QuadTree.QuadTree;
 import Data_Structures.Trie.Trie;
 
 import GUI.Drawing.MapDrawer;
@@ -15,6 +16,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class MapGUI extends GUI {
@@ -23,6 +25,7 @@ public class MapGUI extends GUI {
     private final RoadMap roadMap = RoadMap.newInstance();
     private final MapDrawer mapDrawer = MapDrawer.create(this);
     private final Trie trie = Trie.create();
+    private QuadTree quad;
 
     private Node highlightedNode;
     private ArrayList<Road> highlightedRoads;
@@ -102,9 +105,10 @@ public class MapGUI extends GUI {
             timeEnd = System.currentTimeMillis();
             //System.out.println("time: " + (timeEnd - timeStart));
             mapDrawer.drawTo((Graphics2D) g)
-                     .drawPolygons(roadMap.getPolygons(), origin, scale)
-                     .drawSegments(roadMap.getSegments(), origin, scale)
-                     .drawNodes(roadMap.getNodes(), origin, scale);
+                     //.drawPolygons(roadMap.getPolygons(), origin, scale)
+                    //.drawSegments(roadMap.getSegments(), origin, scale)
+                     .drawNodes(roadMap.getNodes(), origin, scale)
+                     .drawQuad(quad, origin, scale);
         }
     }
 
@@ -117,7 +121,7 @@ public class MapGUI extends GUI {
         Node closestNode = null;
         for (Node n : this.roadMap.getNodes().values()){
             double dist = n.getLocation().distance(clickLocation);
-            if (dist < closestDist && n.getLocation().isClose(clickLocation, 0.5)){
+            if (dist < closestDist && n.getLocation().isClose(clickLocation, 0.75)){
                 closestDist = dist;
                 closestNode = n;
             }
@@ -166,6 +170,7 @@ public class MapGUI extends GUI {
          int draggedY = draggedPoint.y - pressedPoint.y;
          //lmfao I don't even know how this works but it does
          origin = origin.moveBy(-(draggedX/(25*scale*0.1)), draggedY/(25*scale*0.1));
+         initialiseQuad();
     }
 
     @Override
@@ -179,6 +184,8 @@ public class MapGUI extends GUI {
         }
         List<Object> getExactMatch = trie.get(input.toCharArray());
         List<Object> getMatchingPrefix = trie.getAll(input.toCharArray());
+
+
         if (highlightedRoads != null){
             for (Road r : highlightedRoads){
                 r.setHighlighted(false);
@@ -195,11 +202,17 @@ public class MapGUI extends GUI {
                     }
                 }
             } else if (!getMatchingPrefix.isEmpty()){
+                getAutoComplete().removeAllItems();
+                HashSet<String> checkForDuplicates = new HashSet<>();
                 for (Object l : (List<Object>) getMatchingPrefix){
                     if (l != null) {
                         for (Object o : (List<Object>) l){
                             if (o != null) {
                                 Road r = (Road) o;
+                                if (!checkForDuplicates.contains(((Road) o).getFullName())){
+                                    getAutoComplete().addItem(((Road) o).getFullName());
+                                }
+                                checkForDuplicates.add(((Road) o).getFullName());
                                 r.setHighlighted(true);
                                 highlightedRoads.add(r);
                             }
@@ -213,7 +226,6 @@ public class MapGUI extends GUI {
 
     @Override
     protected void onMove(GUI.Move m) {
-
         switch (m) {
             case NORTH:
                 origin = origin.moveBy(0, 100*(1/scale));
@@ -229,18 +241,20 @@ public class MapGUI extends GUI {
                 break;
             case ZOOM_IN:
                 scale = scale*ZOOM_FACTOR;
-                calculateCurrentMapSize();
-                double currentWidth = currentRight - currentLeft;
-                double currentHeight = currentBottom - currentTop;
-                double moveByX = (currentWidth - (currentWidth/ZOOM_FACTOR))/2;
-                double moveByY = (currentHeight - (currentHeight/ZOOM_FACTOR))/2;
-                //origin = origin.moveBy(moveByX, moveByY);
                 break;
             case ZOOM_OUT:
                 scale = scale/ZOOM_FACTOR;
-                //origin = Location.newFromPoint(MouseInfo.getPointerInfo().getLocation(), origin, scale);
                 break;
         }
+        initialiseQuad();
+    }
+
+    private void initialiseQuad(){
+        quad = QuadTree.createFrom(0,0,getWindowWidth(), getWindowHeight(), this);
+        for (Node node : roadMap.getNodes().values()){
+            quad.insert(node, origin, scale);
+        }
+        //quad.printQuad(origin,scale);
     }
 
     @Override
@@ -248,11 +262,13 @@ public class MapGUI extends GUI {
         timeStart = System.currentTimeMillis();
         Parser.parse(nodes, roads, segments, polygons, roadMap, trie);
         calcScale(); //calculates the initial scale and origin
+        initialiseQuad();
     }
 
     @Override
     protected void onResize(){
         calcScale();
+        initialiseQuad();
     }
 
     public static void main(String[] args){ final MapGUI mapGUI = new MapGUI(); }

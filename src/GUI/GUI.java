@@ -6,20 +6,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.text.DefaultCaret;
 
@@ -117,9 +104,9 @@ public abstract class GUI {
      * @return the JTextField used as a search box in the top-right, which can
      *         be queried for the string it contains.
      */
-    public JTextField getSearchBox() {
-        return search;
-    }
+    public JTextField getSearchBox() { return search; }
+
+    public JComboBox getAutoComplete() { return autoComplete; }
 
     /**
      * @return the dimensions of the drawing area.
@@ -180,11 +167,13 @@ public abstract class GUI {
     private JTextArea textOutputArea;
 
     private JTextField search;
+    private JComboBox autoComplete;
     private JFileChooser fileChooser;
 
     public GUI() {
         initialise();
     }
+    int currentIndex;
 
     @SuppressWarnings("serial")
     private void initialise() {
@@ -304,8 +293,21 @@ public abstract class GUI {
         // next, make the search box at the top-right. we manually fix
         // it's size, and add an action listener to call your code when
         // the user presses enter.
-        search = new JTextField(SEARCH_COLS);
+        search = new JTextField();
+        DefaultComboBoxModel model = new DefaultComboBoxModel();
+
+        autoComplete = new JComboBox(model){
+            public Dimension getPreferredSize(){
+                return new Dimension(super.getPreferredSize().width, 0);
+            }
+        };
+        autoComplete.setEnabled(true);
+
+
         search.setMaximumSize(new Dimension(0, 25));
+        search.setColumns(SEARCH_COLS);
+        search.setLayout(new BorderLayout());
+        search.add(autoComplete, BorderLayout.SOUTH);
         search.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onSearch();
@@ -313,18 +315,50 @@ public abstract class GUI {
             }
         });
 
+
         if (UPDATE_ON_EVERY_CHARACTER) {
             // this forces an action event to fire on every key press, so the
             // user doesn't need to hit enter for results.
             search.addKeyListener(new KeyAdapter() {
+
+
                 public void keyReleased(KeyEvent e) {
                     // don't fire an event on backspace or delete
                     //if (e.getKeyCode() == 8 || e.getKeyCode() == 127)
-                        //return;
-                    search.postActionEvent();
+                    //return;
+                    //System.out.println(autoComplete.getSelectedIndex());
+                    //System.out.println(autoComplete.);
+                    if (e.getKeyCode() == 40 || e.getKeyCode() == 38 || e.getKeyCode() == 10) {
+                        if (e.getKeyCode() == 40){
+                            if (currentIndex == -1) {
+                                autoComplete.setSelectedIndex(0);
+                            } else if (currentIndex + 1 >= autoComplete.getItemCount()) {
+                                autoComplete.setSelectedIndex(0);
+                            } else {
+                                currentIndex++;
+                                autoComplete.setSelectedIndex(currentIndex);
+                            }
+                        } else if (e.getKeyCode() == 38){
+                            if (currentIndex == 0 || currentIndex == -1) {
+                                currentIndex = autoComplete.getItemCount() - 1;
+                                autoComplete.setSelectedIndex(autoComplete.getItemCount() - 1);
+                            } else {
+                                currentIndex--;
+                                autoComplete.setSelectedIndex(currentIndex);
+                            }
+                        } else if (e.getKeyCode() == 10) {
+                            search.setText((String) autoComplete.getItemAt(currentIndex));
+                            search.postActionEvent();
+                        }
+
+                    } else {
+                        search.postActionEvent();
+                    }
+                    autoComplete.setPopupVisible(true);
                 }
             });
         }
+
 
         /*
          * next, make the top bar itself and arrange everything inside of it.

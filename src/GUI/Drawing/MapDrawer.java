@@ -44,7 +44,9 @@ public class MapDrawer {
     }
 
     public MapDrawer drawQuad(QuadTree quad, Location origin, double scale){
-        quad.draw(g, origin, scale);
+        if (quad != null){
+            quad.draw(g, origin, scale);
+        }
         return this;
     }
 

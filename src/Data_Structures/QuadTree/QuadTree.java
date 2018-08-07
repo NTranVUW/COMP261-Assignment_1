@@ -34,25 +34,26 @@ public class QuadTree {
 
     public boolean insert(Node n, Location origin, double scale){
         Point2D point = n.getLocation().asPoint2D(origin, scale);
-        if (!boundary.contains(point)){
+        //initial quadrants
+        if (depth == 0){
+            subdivide();
+        }
+        else if (!boundary.contains(point)){
             return false;
         }
-        if (nodes.size() < capacity){
-            if (point.getX() >= 0 && point.getX() <= gui.getWindowWidth() && point.getY() >= 0 && point.getY() <= gui.getWindowHeight()  ){
-                nodes.add(n);
-                return true;
-            }
-            return false;
+        else if (nodes.size() < capacity){
+            nodes.add(n);
+            return true;
+        } else if (northWest == null){
+            subdivide();
         }
-        if (northWest == null){ subdivide(); }
-
-        if (northWest.insert(n, origin, scale)){ return true; }
-        if (southWest.insert(n, origin, scale)){ return true; }
-        if (southEast.insert(n, origin, scale)){ return true; }
-        if (northEast.insert(n, origin, scale)){ return true; }
-
+        else {
+            if (northWest.insert(n, origin, scale)){ return true; }
+            if (southWest.insert(n, origin, scale)){ return true; }
+            if (southEast.insert(n, origin, scale)){ return true; }
+            if (northEast.insert(n, origin, scale)){ return true; }
+        }
         System.out.println("node at " + point.getX() + "x " + point.getY() + "y");
-
         return false;
     }
 
